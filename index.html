@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>TARTYP CRM</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <link rel="manifest" href="manifest.json">
+</head>
+<body>
+    <div id="sidebar-overlay" class="overlay"></div>
+    <div id="sidebar" class="sidebar">
+        <div class="sidebar-header">
+            <h2 id="t-settings">Настройки</h2>
+            <button id="closeSidebar">✕</button>
+        </div>
+        <div class="sidebar-content">
+            <div class="setting-group">
+                <label id="t-language">Язык / Тіл</label>
+                <select id="langSelect">
+                    <option value="ru">Русский</option>
+                    <option value="kz">Қазақша</option>
+                </select>
+            </div>
+            <div class="setting-group">
+                <label id="t-role">Роль</label>
+                <select id="roleSelect">
+                    <option value="worker">Прораб (Worker)</option>
+                    <option value="boss">Бастык (Boss)</option>
+                </select>
+            </div>
+            <div class="setting-group">
+                <button id="resetDataBtn" class="btn-danger"><span id="t-reset">Сбросить данные</span></button>
+            </div>
+        </div>
+    </div>
+
+    <header>
+        <div class="logo">TARTYP</div>
+        <button id="menuBtn" class="menu-btn">
+            <div class="bar"></div>
+            <div class="bar"></div>
+            <div class="bar"></div>
+        </button>
+    </header>
+
+    <main>
+        <div class="tabs">
+            <button id="tabCalc" class="tab active"><span id="t-tab-calc">Калькулятор</span></button>
+            <button id="tabArchive" class="tab"><span id="t-tab-archive">Архив</span></button>
+        </div>
+
+        <div id="calcView" class="view active">
+            <div class="card" id="pdf-content">
+                <div class="form-group">
+                    <label id="t-proj-name">Название объекта</label>
+                    <input type="text" id="projectName" placeholder="Например: ЖК Столичный">
+                </div>
+                
+                <div class="form-group">
+                    <label id="t-material">Материал</label>
+                    <select id="materialSelect">
+                        <option value="gazoblok">Газоблок (600x300x200)</option>
+                        <option value="brick">Кирпич 1NF (250x120x65)</option>
+                        <option value="shlakoblok">Шлакоблок (390x190x188)</option>
+                    </select>
+                </div>
+
+                <div class="row">
+                    <div class="form-group half">
+                        <label id="t-wall-len">Длина стены (мм)</label>
+                        <input type="number" id="wallLength" placeholder="0">
+                    </div>
+                    <div class="form-group half">
+                        <label id="t-wall-hgt">Высота стены (мм)</label>
+                        <input type="number" id="wallHeight" placeholder="0">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label id="t-openings">Площадь проемов (м²)</label>
+                    <input type="number" id="openingsArea" placeholder="0" step="0.1">
+                </div>
+
+                <div class="results-box">
+                    <h3 id="t-tech-results">Технические результаты</h3>
+                    <div class="result-row">
+                        <span id="t-clean-area">Чистая площадь:</span>
+                        <strong id="resCleanArea">0.00 м²</strong>
+                    </div>
+                    <div class="result-row">
+                        <span id="t-qty-calc">Кол-во (расчетное):</span>
+                        <strong id="resQty">0 шт</strong>
+                    </div>
+                    <div class="result-row highlight">
+                        <span id="t-qty-waste">С запасом (7%):</span>
+                        <strong id="resQtyWaste">0 шт</strong>
+                    </div>
+                    <div class="result-row">
+                        <span id="t-total-weight">Общий вес:</span>
+                        <strong id="resWeight">0.00 т</strong>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label id="t-manual-qty">Итоговое количество (ручной ввод шт)</label>
+                    <input type="number" id="manualQty" placeholder="Оставьте пустым для авторасчета">
+                </div>
+
+                <div id="financialBlock" class="financial-block hidden">
+                    <h3 id="t-fin-block">Финансовый блок</h3>
+                    <div class="row">
+                        <div class="form-group half">
+                            <label id="t-cost-price">Закуп (за шт, ₸)</label>
+                            <input type="number" id="costPrice" placeholder="0">
+                        </div>
+                        <div class="form-group half">
+                            <label id="t-sell-price">Продажа (за шт, ₸)</label>
+                            <input type="number" id="sellPrice" placeholder="0">
+                        </div>
+                    </div>
+                    
+                    <div class="results-box fin-results">
+                        <div class="result-row">
+                            <span id="t-total-cost">Себестоимость:</span>
+                            <strong id="resTotalCost">0 ₸</strong>
+                        </div>
+                        <div class="result-row highlight-fin">
+                            <span id="t-net-profit">Чистая прибыль:</span>
+                            <strong id="resNetProfit">0 ₸</strong>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="actions">
+                <button id="saveBtn" class="btn-primary"><span id="t-save-btn">Сохранить в Архив</span></button>
+                <div class="row-actions">
+                    <button id="tgBtn" class="btn-tg"><span id="t-tg-btn">Отправить Бастыку</span></button>
+                </div>
+                <div class="row-actions">
+                    <button id="excelBtn" class="btn-secondary"><span id="t-excel-btn">Export Excel</span></button>
+                    <button id="pdfBtn" class="btn-secondary"><span id="t-pdf-btn">Export PDF</span></button>
+                </div>
+            </div>
+        </div>
+
+        <div id="archiveView" class="view">
+            <div id="archiveList" class="archive-list">
+                <!-- Archive items will be injected here -->
+            </div>
+        </div>
+    </main>
+
+    <script src="app.js"></script>
+</body>
+</html>
