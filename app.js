@@ -1,30 +1,30 @@
 const materialsData = {
-    gazoblok: { name: 'Газоблок (600x300x200)', faceArea: 0.12, weight: 22 }, // 600 * 200 = 120,000 mm2
-    brick: { name: 'Кирпич 1NF (250x120x65)', faceArea: 0.01625, weight: 3.5 }, // 250 * 65 = 16,250 mm2
-    shlakoblok: { name: 'Шлакоблок (390x190x188)', faceArea: 0.07332, weight: 18 } // 390 * 188 = 73,320 mm2
+    gazoblok: { name: 'Газоблок (600x300x200)', vol: 0.036, weight: 22 }, // 0.6 * 0.3 * 0.2
+    brick: { name: 'Кирпич 1NF (250x120x65)', vol: 0.00195, weight: 3.5 }, // 0.25 * 0.12 * 0.065
+    shlakoblok: { name: 'Шлакоблок (390x190x188)', vol: 0.01393, weight: 18 } // 0.39 * 0.19 * 0.188
 };
 
 const i18n = {
     ru: {
         settings: "Настройки", language: "Язык / Тіл", role: "Роль", reset: "Сбросить данные",
         tabCalc: "Калькулятор", tabArchive: "Архив", projName: "Название объекта", material: "Материал",
-        wallLen: "Длина стены (мм)", wallHgt: "Высота стены (мм)", openings: "Площадь проемов (м²)",
-        techResults: "Технические результаты", cleanArea: "Чистая площадь:", qtyCalc: "Кол-во (расчетное):",
-        qtyWaste: "С запасом (7%):", totalWeight: "Общий вес:", manualQty: "Итоговое количество (ручной ввод шт)",
+        wallLen: "Длина стены (мм)", wallHgt: "Высота стены (мм)", wallThk: "Толщина (мм)", openings: "Площадь проемов (м²)", wastePct: "Процент на бой (%)",
+        techResults: "Технические результаты", cleanArea: "Чистый объем (м³):", qtyCalc: "Кол-во (расчетное):",
+        qtyWaste: "С запасом:", totalWeight: "Общий вес:", trucks: "Фур (по 20т):", manualQty: "Итоговое количество (ручной ввод шт)",
         finBlock: "Финансовый блок", costPrice: "Закуп (за шт, ₸)", sellPrice: "Продажа (за шт, ₸)",
-        totalCost: "Себестоимость:", netProfit: "Чистая прибыль:", saveBtn: "Сохранить в Архив",
-        tgBtn: "Отправить Бастыку", excelBtn: "Export Excel", pdfBtn: "Export PDF",
+        totalCost: "Бюджет (Себестоимость):", netProfit: "Чистая прибыль:", saveBtn: "Сохранить в Архив",
+        tgBtn: "Отправить Бастыку", excelBtn: "Export Excel (CSV)", pdfBtn: "Export PDF",
         delConfirm: "Точно удалить?", pieces: "шт", tons: "т", noData: "Нет сохраненных проектов"
     },
     kz: {
         settings: "Баптаулар", language: "Язык / Тіл", role: "Рөлі", reset: "Деректерді жою",
         tabCalc: "Калькулятор", tabArchive: "Мұрағат", projName: "Нысан атауы", material: "Материал",
-        wallLen: "Қабырға ұзындығы (мм)", wallHgt: "Қабырға биіктігі (мм)", openings: "Ойықтар ауданы (м²)",
-        techResults: "Техникалық нәтижелер", cleanArea: "Таза ауданы:", qtyCalc: "Саны (есептелген):",
-        qtyWaste: "Қормен (7%):", totalWeight: "Жалпы салмағы:", manualQty: "Қорытынды саны (қолмен енгізу дана)",
+        wallLen: "Қабырға ұзындығы (мм)", wallHgt: "Қабырға биіктігі (мм)", wallThk: "Қалыңдығы (мм)", openings: "Ойықтар ауданы (м²)", wastePct: "Қор пайызы (%)",
+        techResults: "Техникалық нәтижелер", cleanArea: "Таза көлем (м³):", qtyCalc: "Саны (есептелген):",
+        qtyWaste: "Қормен:", totalWeight: "Жалпы салмағы:", trucks: "Фуралар (20т-дан):", manualQty: "Қорытынды саны (қолмен енгізу дана)",
         finBlock: "Қаржы блогы", costPrice: "Сатып алу (дана үшін, ₸)", sellPrice: "Сату (дана үшін, ₸)",
-        totalCost: "Өзіндік құны:", netProfit: "Таза пайда:", saveBtn: "Мұрағатқа сақтау",
-        tgBtn: "Бастыққа жіберу", excelBtn: "Excel жүктеу", pdfBtn: "PDF жүктеу",
+        totalCost: "Бюджет (Өзіндік құны):", netProfit: "Таза пайда:", saveBtn: "Мұрағатқа сақтау",
+        tgBtn: "Бастыққа жіберу", excelBtn: "Excel жүктеу (CSV)", pdfBtn: "PDF жүктеу",
         delConfirm: "Өшіруге сенімдісіз бе?", pieces: "дана", tons: "т", noData: "Сақталған жобалар жоқ"
     }
 };
@@ -54,7 +54,9 @@ const el = {
     materialSelect: document.getElementById('materialSelect'),
     wallLength: document.getElementById('wallLength'),
     wallHeight: document.getElementById('wallHeight'),
+    wallThickness: document.getElementById('wallThickness'),
     openingsArea: document.getElementById('openingsArea'),
+    wastePercent: document.getElementById('wastePercent'),
     manualQty: document.getElementById('manualQty'),
     costPrice: document.getElementById('costPrice'),
     sellPrice: document.getElementById('sellPrice'),
@@ -64,6 +66,7 @@ const el = {
     resQty: document.getElementById('resQty'),
     resQtyWaste: document.getElementById('resQtyWaste'),
     resWeight: document.getElementById('resWeight'),
+    resTrucks: document.getElementById('resTrucks'),
     resTotalCost: document.getElementById('resTotalCost'),
     resNetProfit: document.getElementById('resNetProfit'),
     
@@ -92,12 +95,15 @@ function applyTranslation() {
     document.getElementById('t-material').textContent = t.material;
     document.getElementById('t-wall-len').textContent = t.wallLen;
     document.getElementById('t-wall-hgt').textContent = t.wallHgt;
+    document.getElementById('t-wall-thk').textContent = t.wallThk;
     document.getElementById('t-openings').textContent = t.openings;
+    document.getElementById('t-waste-pct').textContent = t.wastePct;
     document.getElementById('t-tech-results').textContent = t.techResults;
     document.getElementById('t-clean-area').textContent = t.cleanArea;
     document.getElementById('t-qty-calc').textContent = t.qtyCalc;
     document.getElementById('t-qty-waste').textContent = t.qtyWaste;
     document.getElementById('t-total-weight').textContent = t.totalWeight;
+    document.getElementById('t-trucks').textContent = t.trucks;
     document.getElementById('t-manual-qty').textContent = t.manualQty;
     document.getElementById('t-fin-block').textContent = t.finBlock;
     document.getElementById('t-cost-price').textContent = t.costPrice;
@@ -120,7 +126,7 @@ function init() {
     renderArchive();
     
     // Listeners for inputs
-    const inputs = ['projectName', 'materialSelect', 'wallLength', 'wallHeight', 'openingsArea', 'manualQty', 'costPrice', 'sellPrice'];
+    const inputs = ['projectName', 'materialSelect', 'wallLength', 'wallHeight', 'wallThickness', 'openingsArea', 'wastePercent', 'manualQty', 'costPrice', 'sellPrice'];
     inputs.forEach(id => {
         el[id].addEventListener('input', calculate);
     });
@@ -141,27 +147,32 @@ function calculate() {
     
     const wLen = parseFloat(el.wallLength.value) || 0; // mm
     const wHgt = parseFloat(el.wallHeight.value) || 0; // mm
+    const wThk = parseFloat(el.wallThickness.value) || 200; // mm (default 200)
     const oArea = parseFloat(el.openingsArea.value) || 0; // m2
+    const wPct = parseFloat(el.wastePercent.value) || 0; // %
     
-    // Wall area in m2
-    const wallArea = (wLen / 1000) * (wHgt / 1000);
-    const cleanArea = Math.max(0, wallArea - oArea);
+    // Volume in m3
+    const wallVol = (wLen / 1000) * (wHgt / 1000) * (wThk / 1000);
+    const openingsVol = oArea * (wThk / 1000);
+    const cleanVol = Math.max(0, wallVol - openingsVol);
     
     const matKey = el.materialSelect.value;
     const mat = materialsData[matKey];
     
-    const qtyCalc = cleanArea > 0 ? Math.ceil(cleanArea / mat.faceArea) : 0;
-    const qtyWaste = Math.ceil(qtyCalc * 1.07);
+    const qtyCalc = cleanVol > 0 ? Math.ceil(cleanVol / mat.vol) : 0;
+    const qtyWaste = Math.ceil(qtyCalc * (1 + (wPct / 100)));
     
     const manualQ = parseInt(el.manualQty.value);
     const finalQty = !isNaN(manualQ) && manualQ > 0 ? manualQ : qtyWaste;
     
     const totalWeightTons = (finalQty * mat.weight) / 1000;
+    const trucks = Math.ceil(totalWeightTons / 20); // 1 truck = 20 tons
     
-    el.resCleanArea.textContent = `${cleanArea.toFixed(2)} м²`;
+    el.resCleanArea.textContent = `${cleanVol.toFixed(3)} м³`;
     el.resQty.textContent = `${qtyCalc} ${t.pieces}`;
     el.resQtyWaste.textContent = `${qtyWaste} ${t.pieces}`;
     el.resWeight.textContent = `${totalWeightTons.toFixed(2)} ${t.tons}`;
+    el.resTrucks.textContent = `${trucks} шт`;
     
     // Fin calc
     const cPrice = parseFloat(el.costPrice.value) || 0;
@@ -178,9 +189,9 @@ function calculate() {
         name: el.projectName.value || 'Без названия',
         matKey,
         matName: mat.name,
-        wLen, wHgt, oArea, cleanArea,
+        wLen, wHgt, wThk, oArea, wPct, cleanVol,
         qtyCalc, qtyWaste, manualQ, finalQty,
-        totalWeightTons,
+        totalWeightTons, trucks,
         cPrice, sPrice, totalCost, netProfit
     };
 }
@@ -197,7 +208,9 @@ el.saveBtn.addEventListener('click', () => {
             materialSelect: el.materialSelect.value,
             wallLength: el.wallLength.value,
             wallHeight: el.wallHeight.value,
+            wallThickness: el.wallThickness.value,
             openingsArea: el.openingsArea.value,
+            wastePercent: el.wastePercent.value,
             manualQty: el.manualQty.value,
             costPrice: el.costPrice.value,
             sellPrice: el.sellPrice.value
@@ -231,7 +244,9 @@ window.loadProject = function(id) {
     el.materialSelect.value = inputs.materialSelect || 'gazoblok';
     el.wallLength.value = inputs.wallLength || '';
     el.wallHeight.value = inputs.wallHeight || '';
+    el.wallThickness.value = inputs.wallThickness || '';
     el.openingsArea.value = inputs.openingsArea || '';
+    el.wastePercent.value = inputs.wastePercent || '7';
     el.manualQty.value = inputs.manualQty || '';
     el.costPrice.value = inputs.costPrice || '';
     el.sellPrice.value = inputs.sellPrice || '';
@@ -292,15 +307,16 @@ el.tgBtn.addEventListener('click', async () => {
     
     let text = `🏗 *TARTYP Отчет: ${data.name}*\n\n`;
     text += `🧱 *Материал:* ${data.matName}\n`;
-    text += `📏 *Чистая площадь:* ${data.cleanArea.toFixed(2)} м²\n`;
-    text += `📦 *Кол-во (с учетом запаса 7%):* ${data.finalQty} шт\n`;
+    text += `📏 *Чистый объем стены:* ${data.cleanVol.toFixed(3)} м³\n`;
+    text += `📦 *Кол-во (с учетом запаса ${data.wPct}%):* ${data.finalQty} шт\n`;
     if (!isNaN(data.manualQ) && data.manualQ > 0) {
         text += `*(Ручной ввод количества!)*\n`;
     }
     text += `⚖️ *Общий вес:* ${data.totalWeightTons.toFixed(2)} т\n`;
+    text += `🚛 *Фур (20т):* ${data.trucks} шт\n`;
     
     if (currentRole === 'boss') {
-        text += `\n💰 *Финансы:*\n`;
+        text += `\n💰 *Финансы (Бюджет):*\n`;
         text += `Себестоимость: ${data.totalCost.toLocaleString('ru-RU')} ₸\n`;
         text += `Чистая прибыль: ${data.netProfit.toLocaleString('ru-RU')} ₸\n`;
     }
@@ -339,46 +355,44 @@ el.tgBtn.addEventListener('click', async () => {
     }, 2000);
 });
 
-// Excel Export
+// Excel Export (CSV Fallback for Offline)
 el.excelBtn.addEventListener('click', () => {
     vibe();
-    if (typeof XLSX === 'undefined') {
-        alert("Библиотека XLSX не загружена!");
-        return;
-    }
     const data = calculate();
     
-    let wsData = [
-        ["Параметр", "Значение"],
-        ["Объект", data.name],
-        ["Материал", data.matName],
-        ["Длина стены (мм)", data.wLen],
-        ["Высота стены (мм)", data.wHgt],
-        ["Проемы (м2)", data.oArea],
-        ["Чистая площадь (м2)", data.cleanArea.toFixed(2)],
-        ["Кол-во расчетное (шт)", data.qtyCalc],
-        ["Кол-во с запасом 7% (шт)", data.qtyWaste]
-    ];
+    let csvContent = "\uFEFF"; // BOM for UTF-8
+    csvContent += "Параметр;Значение\n";
+    csvContent += `Объект;${data.name}\n`;
+    csvContent += `Материал;${data.matName}\n`;
+    csvContent += `Длина стены (мм);${data.wLen}\n`;
+    csvContent += `Высота стены (мм);${data.wHgt}\n`;
+    csvContent += `Толщина (мм);${data.wThk}\n`;
+    csvContent += `Проемы (м2);${data.oArea}\n`;
+    csvContent += `Чистый объем (м3);${data.cleanVol.toFixed(3)}\n`;
+    csvContent += `Кол-во расчетное (шт);${data.qtyCalc}\n`;
+    csvContent += `Кол-во с запасом ${data.wPct}% (шт);${data.qtyWaste}\n`;
     
     if (!isNaN(data.manualQ) && data.manualQ > 0) {
-        wsData.push(["Итоговое количество (ручное, шт)", data.manualQ]);
+        csvContent += `Итоговое количество (ручное, шт);${data.manualQ}\n`;
     } else {
-        wsData.push(["Итоговое количество (шт)", data.finalQty]);
+        csvContent += `Итоговое количество (шт);${data.finalQty}\n`;
     }
     
-    wsData.push(["Общий вес (т)", data.totalWeightTons.toFixed(2)]);
+    csvContent += `Общий вес (т);${data.totalWeightTons.toFixed(2)}\n`;
+    csvContent += `Фур по 20т (шт);${data.trucks}\n`;
     
     if (currentRole === 'boss') {
-        wsData.push(["Закуп (₸/шт)", data.cPrice]);
-        wsData.push(["Продажа (₸/шт)", data.sPrice]);
-        wsData.push(["Себестоимость (₸)", data.totalCost]);
-        wsData.push(["Чистая прибыль (₸)", data.netProfit]);
+        csvContent += `Закуп (₸/шт);${data.cPrice}\n`;
+        csvContent += `Продажа (₸/шт);${data.sPrice}\n`;
+        csvContent += `Бюджет (Себестоимость, ₸);${data.totalCost}\n`;
+        csvContent += `Чистая прибыль (₸);${data.netProfit}\n`;
     }
     
-    const ws = XLSX.utils.aoa_to_sheet(wsData);
-    const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, "Смета");
-    XLSX.writeFile(wb, `Смета_${data.name || 'объект'}.xlsx`);
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = `Смета_${data.name || 'объект'}.csv`;
+    link.click();
 });
 
 // PDF Export
