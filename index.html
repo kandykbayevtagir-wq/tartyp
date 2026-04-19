@@ -7,12 +7,47 @@
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
+    <!-- Sidebar Overlay -->
+    <div id="sidebar-overlay" class="hidden"></div>
+    
+    <!-- Sidebar -->
+    <div id="sidebar" class="sidebar">
+        <div class="sidebar-header">
+            <h2 data-i18n="menu_title">Меню</h2>
+            <button id="close-sidebar" class="icon-btn">✕</button>
+        </div>
+        
+        <div class="sidebar-content">
+            <div class="form-group">
+                <label data-i18n="profile_name">Имя профиля</label>
+                <input type="text" id="profile-name-input" placeholder="Введите имя">
+            </div>
+            
+            <div class="form-group">
+                <label data-i18n="role_select">Роль</label>
+                <select id="role-select">
+                    <option value="worker" data-i18n="worker">ПРОРАБ</option>
+                    <option value="boss" data-i18n="boss">БАСТЫК</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label data-i18n="lang_select">Язык / Тіл</label>
+                <select id="lang-select-sidebar">
+                    <option value="ru">Русский</option>
+                    <option value="kz">Қазақша</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
     <header>
+        <button id="open-sidebar" class="icon-btn" style="font-size: 24px;">☰</button>
         <div class="header-title">TARTYP</div>
-        <div id="role-badge" style="font-size: 12px; color: var(--text-muted); font-weight: bold;">ПРОРАБ</div>
+        <div id="role-badge" style="font-size: 12px; color: var(--text-muted); font-weight: bold;"></div>
     </header>
 
     <main id="view-calc">
@@ -130,14 +165,6 @@
             <div class="card-title" data-i18n="export">Экспорт и отчеты</div>
             <button class="btn mb-4" id="btn-export-pdf" data-i18n="export_pdf">Скачать PDF</button>
             <button class="btn btn-secondary" id="btn-export-excel" data-i18n="export_excel">Скачать Excel (1C)</button>
-            
-            <div class="mt-4 form-group">
-                <label data-i18n="lang_select">Язык / Тіл</label>
-                <select id="lang-select">
-                    <option value="ru">Русский</option>
-                    <option value="kz">Қазақша</option>
-                </select>
-            </div>
         </div>
         
         <div id="pdf-template" class="hidden" style="background: white; color: black; padding: 20px; font-family: Arial, sans-serif; width: 800px; box-sizing: border-box;">
@@ -183,8 +210,8 @@
         </button>
     </footer>
 
-    <script src="js/locales.js"></script>
-    <script src="js/math.js"></script>
-    <script src="js/app.js"></script>
+    <script src="locales.js"></script>
+    <script src="math.js"></script>
+    <script src="app.js"></script>
 </body>
 </html>
