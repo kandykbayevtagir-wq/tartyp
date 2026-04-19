@@ -29,13 +29,18 @@ const locales = {
         export_excel: 'Скачать Excel (1C)',
         calc: 'Расчет',
         projects_tab: 'Проекты',
-        export_tab: 'Есептер',
+        export_tab: 'Отчеты',
         worker: 'ПРОРАБ',
         boss: 'БАСТЫК',
         lang_select: 'Язык / Тіл',
         brick_1nf: 'Кирпич 1NF (250x120x65)',
         gas_block: 'Газоблок (600x300x200)',
-        cinder_block: 'Шлакоблок (390x190x188)'
+        cinder_block: 'Шлакоблок (390x190x188)',
+        menu_title: 'Меню',
+        profile_name: 'Имя профиля',
+        role_select: 'Роль',
+        delete_confirm: 'Вы уверены, что хотите удалить этот проект?',
+        delete_btn: 'Удалить'
     },
     kz: {
         project_details: 'Объект параметрлері',
@@ -73,7 +78,12 @@ const locales = {
         lang_select: 'Язык / Тіл',
         brick_1nf: 'Кірпіш 1NF (250x120x65)',
         gas_block: 'Газблок (600x300x200)',
-        cinder_block: 'Қожблок (390x190x188)'
+        cinder_block: 'Қожблок (390x190x188)',
+        menu_title: 'Мәзір',
+        profile_name: 'Профиль аты',
+        role_select: 'Рөлі',
+        delete_confirm: 'Осы жобаны жоюға сенімдісіз бе?',
+        delete_btn: 'Жою'
     }
 };
 
@@ -82,7 +92,7 @@ let currentLang = localStorage.getItem('tartyp_lang') || 'ru';
 function translateApp() {
     document.querySelectorAll('[data-i18n]').forEach(el => {
         const key = el.getAttribute('data-i18n');
-        if (locales[currentLang][key]) {
+        if (locales[currentLang] && locales[currentLang][key]) {
             el.innerText = locales[currentLang][key];
         }
     });
