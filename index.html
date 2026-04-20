@@ -4,56 +4,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>TARTYP CRM</title>
-    <link rel="stylesheet" href="style.css?v=2">
+    <link rel="stylesheet" href="style.css?v=3">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <link rel="manifest" href="manifest.json">
 </head>
 <body>
-    <div id="sidebar-overlay" class="overlay"></div>
-    <div id="sidebar" class="sidebar">
-        <div class="sidebar-header">
-            <h2 id="t-settings">Настройки</h2>
-            <button id="closeSidebar">✕</button>
-        </div>
-        <div class="sidebar-content">
-            <div class="setting-group">
-                <label id="t-language">Язык / Тіл</label>
-                <select id="langSelect">
-                    <option value="ru">Русский</option>
-                    <option value="kz">Қазақша</option>
-                </select>
-            </div>
-            <div class="setting-group">
-                <label id="t-role">Роль</label>
-                <select id="roleSelect">
-                    <option value="worker">Прораб (Worker)</option>
-                    <option value="boss">Бастык (Boss)</option>
-                </select>
-            </div>
-            <div class="setting-group">
-                <button id="resetDataBtn" class="btn-danger"><span id="t-reset">Сбросить данные</span></button>
-            </div>
-        </div>
-    </div>
-
-    <header>
-        <button id="menuBtn" class="menu-btn">
-            <div class="bar"></div>
-            <div class="bar"></div>
-            <div class="bar"></div>
-        </button>
+    <header style="justify-content: center;">
         <div class="logo">TARTYP</div>
-        <div style="width: 45px;"></div>
     </header>
 
-    <main>
-        <div class="tabs">
-            <button id="tabCalc" class="tab active"><span id="t-tab-calc">Калькулятор</span></button>
-            <button id="tabArchive" class="tab"><span id="t-tab-archive">Архив</span></button>
-        </div>
-
+    <main style="padding-bottom: 80px;">
         <div id="calcView" class="view active">
             <div class="card" id="pdf-content">
                 <div class="form-group">
@@ -115,6 +77,10 @@
                         <strong id="resWeight">0.00 т</strong>
                     </div>
                     <div class="result-row">
+                        <span id="t-mortar">Смесь/Клей (меш. 25кг):</span>
+                        <strong id="resMortar">0 шт</strong>
+                    </div>
+                    <div class="result-row">
                         <span id="t-trucks">Фур (по 20т):</span>
                         <strong id="resTrucks">0 шт</strong>
                     </div>
@@ -153,13 +119,7 @@
 
             <div class="actions">
                 <button id="saveBtn" class="btn-primary"><span id="t-save-btn">Сохранить в Архив</span></button>
-                <div class="row-actions">
-                    <button id="tgBtn" class="btn-tg"><span id="t-tg-btn">Отправить Бастыку</span></button>
-                </div>
-                <div class="row-actions">
-                    <button id="excelBtn" class="btn-secondary"><span id="t-excel-btn">Export Excel</span></button>
-                    <button id="pdfBtn" class="btn-secondary"><span id="t-pdf-btn">Export PDF</span></button>
-                </div>
+                <button id="tgBtn" class="btn-tg"><span id="t-tg-btn">Отправить отчет (с Excel)</span></button>
             </div>
         </div>
 
@@ -168,8 +128,59 @@
                 <!-- Archive items will be injected here -->
             </div>
         </div>
+
+        <div id="settingsView" class="view">
+            <div class="card">
+                <h3 id="t-settings" style="margin-bottom: 15px; color: var(--color-accent);">Настройки</h3>
+                
+                <div class="form-group">
+                    <label id="t-language">Язык / Тіл</label>
+                    <select id="langSelect">
+                        <option value="ru">Русский</option>
+                        <option value="kz">Қазақша</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label id="t-role">Роль</label>
+                    <select id="roleSelect">
+                        <option value="worker">Прораб (Worker)</option>
+                        <option value="boss">Бастык (Boss)</option>
+                    </select>
+                </div>
+                
+                <div class="form-group" style="margin-top: 25px;">
+                    <button id="resetDataBtn" class="btn-danger"><span id="t-reset">Сбросить данные</span></button>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3 id="t-guide-title" style="margin-bottom: 15px; color: var(--color-accent);">Инструкция по калькулятору</h3>
+                <div id="t-guide-text" style="font-size: 14px; color: var(--color-text-dim); line-height: 1.6;">
+                    <p><b>1. Размеры:</b> Длину, Высоту и Толщину стены вводим строго в миллиметрах (мм). <i>Например, 5 метров — это 5000.</i></p>
+                    <p style="margin-top: 10px;"><b>2. Проемы:</b> Площадь окон и дверей вводится в квадратных метрах (м²). <i>Окно 2x2 м = 4 м².</i></p>
+                    <p style="margin-top: 10px;"><b>3. Смесь/Клей:</b> Калькулятор автоматически считает расход сухого клея/раствора в мешках по 25кг.</p>
+                    <p style="margin-top: 10px;"><b>4. Отправка:</b> Кнопка «Отправить отчет» формирует текстовый отчет + <b>Excel файл</b> и сразу скидывает их в Telegram бастыку!</p>
+                </div>
+            </div>
+        </div>
     </main>
 
-    <script src="app.js?v=2"></script>
+    <nav class="bottom-nav">
+        <button id="navCalc" class="nav-item active">
+            <span class="icon">🧮</span>
+            <span id="t-nav-calc">Счет</span>
+        </button>
+        <button id="navArchive" class="nav-item">
+            <span class="icon">📁</span>
+            <span id="t-nav-archive">Архив</span>
+        </button>
+        <button id="navSettings" class="nav-item">
+            <span class="icon">⚙️</span>
+            <span id="t-nav-settings">Настройки</span>
+        </button>
+    </nav>
+
+    <script src="app.js?v=3"></script>
 </body>
 </html>
