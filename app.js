@@ -5,7 +5,6 @@ const materialsData = {
 };
 
 const i18n = {
-const i18n = {
     ru: {
         settings: "Настройки", language: "Язык / Тіл", role: "Роль", reset: "Сбросить данные",
         navCalc: "Счет", navArchive: "Архив", navSettings: "Настройки",
