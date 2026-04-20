@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>TARTYP CRM</title>
-    <link rel="stylesheet" href="style.css?v=3">
+    <link rel="stylesheet" href="style.css?v=5">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
@@ -48,13 +48,17 @@
                 </div>
 
                 <div class="row">
-                    <div class="form-group half">
-                        <label id="t-openings">Площадь проемов (м²)</label>
+                    <div class="form-group third">
+                        <label id="t-openings">Проемы (м²)</label>
                         <input type="number" id="openingsArea" placeholder="0" step="0.1">
                     </div>
-                    <div class="form-group half">
-                        <label id="t-waste-pct">Процент на бой (%)</label>
+                    <div class="form-group third">
+                        <label id="t-waste-pct">Бой (%)</label>
                         <input type="number" id="wastePercent" value="7" placeholder="7">
+                    </div>
+                    <div class="form-group third">
+                        <label id="t-beton-vol">Бетон (м³)</label>
+                        <input type="number" id="betonVol" placeholder="0" step="0.1">
                     </div>
                 </div>
 
@@ -85,28 +89,63 @@
                         <strong id="resTrucks">0 шт</strong>
                     </div>
                 </div>
+                    <div class="result-row">
+                        <span id="t-res-beton">Объем бетона:</span>
+                        <strong id="resBeton">0.00 м³</strong>
+                    </div>
+                </div>
 
                 <div class="form-group">
-                    <label id="t-manual-qty">Итоговое количество (ручной ввод шт)</label>
+                    <label id="t-manual-qty">Итоговое количество блоков (ручной ввод шт)</label>
                     <input type="number" id="manualQty" placeholder="Оставьте пустым для авторасчета">
                 </div>
 
-                <div id="financialBlock" class="financial-block hidden">
-                    <h3 id="t-fin-block">Финансовый блок</h3>
+                <div class="card" style="margin-top: 20px; background-color: var(--color-bg);">
+                    <h3 id="t-prorab-block" style="color: var(--color-text); margin-bottom: 15px;">Блок Прораба (Зарплаты)</h3>
                     <div class="row">
                         <div class="form-group half">
-                            <label id="t-cost-price">Закуп (за шт, ₸)</label>
-                            <input type="number" id="costPrice" placeholder="0">
+                            <label id="t-labor-block">Кладка (за 1 шт, ₸)</label>
+                            <input type="number" id="laborBlockRate" placeholder="0">
                         </div>
                         <div class="form-group half">
-                            <label id="t-sell-price">Продажа (за шт, ₸)</label>
-                            <input type="number" id="sellPrice" placeholder="0">
+                            <label id="t-labor-beton">Бетон (за 1 м³, ₸)</label>
+                            <input type="number" id="laborBetonRate" placeholder="0">
                         </div>
                     </div>
+                    <div class="results-box" style="margin-top: 10px;">
+                        <div class="result-row highlight">
+                            <span id="t-labor-total">К выплате рабочим:</span>
+                            <strong id="resLaborTotal">0 ₸</strong>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="financialBlock" class="financial-block hidden card" style="margin-top: 20px; border: 1px solid var(--color-accent);">
+                    <h3 id="t-fin-block" style="color: var(--color-accent); margin-bottom: 15px;">Блок Бастыка (Финансы)</h3>
                     
-                    <div class="results-box fin-results">
+                    <div class="row">
+                        <div class="form-group third">
+                            <label id="t-cost-price">Блок (закуп, ₸)</label>
+                            <input type="number" id="costPrice" placeholder="0">
+                        </div>
+                        <div class="form-group third">
+                            <label id="t-cost-beton">Бетон (закуп 1м³, ₸)</label>
+                            <input type="number" id="betonCostRate" placeholder="0">
+                        </div>
+                        <div class="form-group third">
+                            <label id="t-cost-mortar">Клей (закуп 1меш, ₸)</label>
+                            <input type="number" id="mortarCostRate" placeholder="0">
+                        </div>
+                    </div>
+
+                    <div class="form-group" style="margin-top: 10px;">
+                        <label id="t-sell-price">Продажа блоков заказчику (за 1 шт, ₸)</label>
+                        <input type="number" id="sellPrice" placeholder="0">
+                    </div>
+                    
+                    <div class="results-box fin-results" style="margin-top: 15px;">
                         <div class="result-row">
-                            <span id="t-total-cost">Себестоимость:</span>
+                            <span id="t-total-cost">Расход (Мат + Работа):</span>
                             <strong id="resTotalCost">0 ₸</strong>
                         </div>
                         <div class="result-row highlight-fin">
@@ -158,9 +197,9 @@
                 <h3 id="t-guide-title" style="margin-bottom: 15px; color: var(--color-accent);">Инструкция по калькулятору</h3>
                 <div id="t-guide-text" style="font-size: 14px; color: var(--color-text-dim); line-height: 1.6;">
                     <p><b>1. Размеры:</b> Длину, Высоту и Толщину стены вводим строго в миллиметрах (мм). <i>Например, 5 метров — это 5000.</i></p>
-                    <p style="margin-top: 10px;"><b>2. Проемы:</b> Площадь окон и дверей вводится в квадратных метрах (м²). <i>Окно 2x2 м = 4 м².</i></p>
-                    <p style="margin-top: 10px;"><b>3. Смесь/Клей:</b> Калькулятор автоматически считает расход сухого клея/раствора в мешках по 25кг.</p>
-                    <p style="margin-top: 10px;"><b>4. Отправка:</b> Кнопка «Отправить отчет» формирует текстовый отчет + <b>Excel файл</b> и сразу скидывает их в Telegram бастыку!</p>
+                    <p style="margin-top: 10px;"><b>2. Проемы и Бетон:</b> Площадь окон (м²) и объем бетона на перемычки/армопояс (м³).</p>
+                    <p style="margin-top: 10px;"><b>3. Зарплаты:</b> Прораб вводит ставки за кладку блока и куб бетона, чтобы сразу видеть итоговую зарплату бригаде.</p>
+                    <p style="margin-top: 10px;"><b>4. Финансы (Бастык):</b> Бастык видит скрытый блок для ввода закупочных цен на материалы и цену продажи, чтобы рассчитать чистую прибыль.</p>
                 </div>
             </div>
         </div>
@@ -181,6 +220,6 @@
         </button>
     </nav>
 
-    <script src="app.js?v=4"></script>
+    <script src="app.js?v=5"></script>
 </body>
 </html>
