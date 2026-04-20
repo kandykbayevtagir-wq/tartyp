@@ -9,35 +9,37 @@ const i18n = {
         settings: "Настройки", language: "Язык / Тіл", role: "Роль", reset: "Сбросить данные",
         navCalc: "Счет", navArchive: "Архив", navSettings: "Настройки",
         projName: "Название объекта", material: "Материал",
-        wallLen: "Длина стены (мм)", wallHgt: "Высота стены (мм)", wallThk: "Толщина (мм)", openings: "Площадь проемов (м²)", wastePct: "Процент на бой (%)",
+        wallLen: "Длина стены (мм)", wallHgt: "Высота стены (мм)", wallThk: "Толщина (мм)", openings: "Проемы (м²)", wastePct: "Бой (%)", betonVol: "Бетон (м³)",
         techResults: "Технические результаты", cleanArea: "Чистый объем (м³):", qtyCalc: "Кол-во (расчетное):",
-        qtyWaste: "С запасом:", totalWeight: "Общий вес:", mortar: "Смесь/Клей (меш. 25кг):", trucks: "Фур (по 20т):", manualQty: "Итоговое количество (ручной ввод шт)",
-        finBlock: "Финансовый блок", costPrice: "Закуп (за шт, ₸)", sellPrice: "Продажа (за шт, ₸)",
-        totalCost: "Бюджет (Себестоимость):", netProfit: "Чистая прибыль:", saveBtn: "Сохранить в Архив",
+        qtyWaste: "С запасом:", totalWeight: "Общий вес:", mortar: "Смесь/Клей (меш. 25кг):", trucks: "Фур (по 20т):", resBeton: "Объем бетона:", manualQty: "Итоговое количество блоков (ручной ввод шт)",
+        prorabBlock: "Блок Прораба (Зарплаты)", laborBlock: "Кладка (за 1 шт, ₸)", laborBeton: "Бетон (за 1 м³, ₸)", laborTotal: "К выплате рабочим:",
+        finBlock: "Блок Бастыка (Финансы)", costPrice: "Блок (закуп, ₸)", costBeton: "Бетон (закуп 1м³, ₸)", costMortar: "Клей (закуп 1меш, ₸)", sellPrice: "Продажа блоков заказчику (за 1 шт, ₸)",
+        totalCost: "Расход (Мат + Работа):", netProfit: "Чистая прибыль:", saveBtn: "Сохранить в Архив",
         tgBtn: "Отправить отчет (с Excel)",
         delConfirm: "Точно удалить?", pieces: "шт", tons: "т", noData: "Нет сохраненных проектов",
         guideTitle: "Инструкция по калькулятору",
         guideText: `<p><b>1. Размеры:</b> Длину, Высоту и Толщину стены вводим строго в миллиметрах (мм). <i>Например, 5 метров — это 5000.</i></p>
-                    <p style="margin-top: 10px;"><b>2. Проемы:</b> Площадь окон и дверей вводится в квадратных метрах (м²). <i>Окно 2x2 м = 4 м².</i></p>
-                    <p style="margin-top: 10px;"><b>3. Смесь/Клей:</b> Калькулятор автоматически считает расход сухого клея/раствора в мешках по 25кг.</p>
-                    <p style="margin-top: 10px;"><b>4. Отправка:</b> Кнопка «Отправить отчет» формирует текстовый отчет + <b>Excel файл</b> и сразу скидывает их в Telegram бастыку!</p>`
+                    <p style="margin-top: 10px;"><b>2. Проемы и Бетон:</b> Площадь окон (м²) и объем бетона на перемычки/армопояс (м³).</p>
+                    <p style="margin-top: 10px;"><b>3. Зарплаты:</b> Прораб вводит ставки за кладку блока и куб бетона, чтобы сразу видеть итоговую зарплату бригаде.</p>
+                    <p style="margin-top: 10px;"><b>4. Финансы (Бастык):</b> Бастык видит скрытый блок для ввода закупочных цен на материалы и цену продажи, чтобы рассчитать чистую прибыль.</p>`
     },
     kz: {
         settings: "Баптаулар", language: "Язык / Тіл", role: "Рөлі", reset: "Деректерді жою",
         navCalc: "Есеп", navArchive: "Мұрағат", navSettings: "Баптаулар",
         projName: "Нысан атауы", material: "Материал",
-        wallLen: "Қабырға ұзындығы (мм)", wallHgt: "Қабырға биіктігі (мм)", wallThk: "Қалыңдығы (мм)", openings: "Ойықтар ауданы (м²)", wastePct: "Қор пайызы (%)",
+        wallLen: "Ұзындығы (мм)", wallHgt: "Биіктігі (мм)", wallThk: "Қалыңдығы (мм)", openings: "Ойықтар (м²)", wastePct: "Бой (%)", betonVol: "Бетон (м³)",
         techResults: "Техникалық нәтижелер", cleanArea: "Таза көлем (м³):", qtyCalc: "Саны (есептелген):",
-        qtyWaste: "Қормен:", totalWeight: "Жалпы салмағы:", mortar: "Қоспа/Желім (қап 25кг):", trucks: "Фуралар (20т-дан):", manualQty: "Қорытынды саны (қолмен енгізу дана)",
-        finBlock: "Қаржы блогы", costPrice: "Сатып алу (дана үшін, ₸)", sellPrice: "Сату (дана үшін, ₸)",
-        totalCost: "Бюджет (Өзіндік құны):", netProfit: "Таза пайда:", saveBtn: "Мұрағатқа сақтау",
+        qtyWaste: "Қормен:", totalWeight: "Жалпы салмағы:", mortar: "Қоспа/Желім (қап 25кг):", trucks: "Фуралар (20т-дан):", resBeton: "Бетон көлемі:", manualQty: "Қорытынды блок саны (қолмен енгізу)",
+        prorabBlock: "Прораб блогы (Жалақы)", laborBlock: "Қалау (1 дана үшін, ₸)", laborBeton: "Бетон (1 м³ үшін, ₸)", laborTotal: "Жұмысшыларға төлем:",
+        finBlock: "Бастық блогы (Қаржы)", costPrice: "Блок (сатып алу, ₸)", costBeton: "Бетон (сатып алу 1м³, ₸)", costMortar: "Желім (сатып алу 1қап, ₸)", sellPrice: "Тапсырыс берушіге сату (1 дана үшін, ₸)",
+        totalCost: "Шығын (Мат + Жұмыс):", netProfit: "Таза пайда:", saveBtn: "Мұрағатқа сақтау",
         tgBtn: "Есепті жіберу (Excel-мен)",
         delConfirm: "Өшіруге сенімдісіз бе?", pieces: "дана", tons: "т", noData: "Сақталған жобалар жоқ",
         guideTitle: "Калькулятор нұсқаулығы",
         guideText: `<p><b>1. Өлшемдер:</b> Қабырғаның ұзындығын, биіктігін және қалыңдығын қатаң түрде миллиметрмен (мм) енгіземіз. <i>Мысалы, 5 метр — бұл 5000.</i></p>
-                    <p style="margin-top: 10px;"><b>2. Ойықтар:</b> Терезелер мен есіктердің ауданы шаршы метрмен (м²) енгізіледі. <i>Терезе 2x2 м = 4 м².</i></p>
-                    <p style="margin-top: 10px;"><b>3. Қоспа/Желім:</b> Калькулятор құрғақ желім/ерітінді шығынын 25 кг қаппен автоматты түрде есептейді.</p>
-                    <p style="margin-top: 10px;"><b>4. Жіберу:</b> «Есепті жіберу» түймесі мәтіндік есеп + <b>Excel файлын</b> құрайды және оларды бірден Telegram-ға бастыққа жібереді!</p>`
+                    <p style="margin-top: 10px;"><b>2. Ойықтар және Бетон:</b> Терезелер ауданы (м²) және бетон көлемі (м³).</p>
+                    <p style="margin-top: 10px;"><b>3. Жалақы:</b> Прораб бригаданың жалпы жалақысын көру үшін ставкаларды енгізеді.</p>
+                    <p style="margin-top: 10px;"><b>4. Қаржы (Бастық):</b> Бастық таза пайданы есептеу үшін материалдар мен сату бағаларын енгізеді.</p>`
     }
 };
 
@@ -67,8 +69,13 @@ const el = {
     wallThickness: document.getElementById('wallThickness'),
     openingsArea: document.getElementById('openingsArea'),
     wastePercent: document.getElementById('wastePercent'),
+    betonVol: document.getElementById('betonVol'),
     manualQty: document.getElementById('manualQty'),
+    laborBlockRate: document.getElementById('laborBlockRate'),
+    laborBetonRate: document.getElementById('laborBetonRate'),
     costPrice: document.getElementById('costPrice'),
+    betonCostRate: document.getElementById('betonCostRate'),
+    mortarCostRate: document.getElementById('mortarCostRate'),
     sellPrice: document.getElementById('sellPrice'),
     
     // Results
@@ -78,6 +85,8 @@ const el = {
     resWeight: document.getElementById('resWeight'),
     resMortar: document.getElementById('resMortar'),
     resTrucks: document.getElementById('resTrucks'),
+    resBeton: document.getElementById('resBeton'),
+    resLaborTotal: document.getElementById('resLaborTotal'),
     resTotalCost: document.getElementById('resTotalCost'),
     resNetProfit: document.getElementById('resNetProfit'),
     
@@ -108,6 +117,7 @@ function applyTranslation() {
     document.getElementById('t-wall-thk').textContent = t.wallThk;
     document.getElementById('t-openings').textContent = t.openings;
     document.getElementById('t-waste-pct').textContent = t.wastePct;
+    document.getElementById('t-beton-vol').textContent = t.betonVol;
     document.getElementById('t-tech-results').textContent = t.techResults;
     document.getElementById('t-clean-area').textContent = t.cleanArea;
     document.getElementById('t-qty-calc').textContent = t.qtyCalc;
@@ -115,9 +125,16 @@ function applyTranslation() {
     document.getElementById('t-total-weight').textContent = t.totalWeight;
     document.getElementById('t-mortar').textContent = t.mortar;
     document.getElementById('t-trucks').textContent = t.trucks;
+    document.getElementById('t-res-beton').textContent = t.resBeton;
     document.getElementById('t-manual-qty').textContent = t.manualQty;
+    document.getElementById('t-prorab-block').textContent = t.prorabBlock;
+    document.getElementById('t-labor-block').textContent = t.laborBlock;
+    document.getElementById('t-labor-beton').textContent = t.laborBeton;
+    document.getElementById('t-labor-total').textContent = t.laborTotal;
     document.getElementById('t-fin-block').textContent = t.finBlock;
     document.getElementById('t-cost-price').textContent = t.costPrice;
+    document.getElementById('t-cost-beton').textContent = t.costBeton;
+    document.getElementById('t-cost-mortar').textContent = t.costMortar;
     document.getElementById('t-sell-price').textContent = t.sellPrice;
     document.getElementById('t-total-cost').textContent = t.totalCost;
     document.getElementById('t-net-profit').textContent = t.netProfit;
@@ -137,7 +154,7 @@ function init() {
     renderArchive();
     
     // Listeners for inputs
-    const inputs = ['projectName', 'materialSelect', 'wallLength', 'wallHeight', 'wallThickness', 'openingsArea', 'wastePercent', 'manualQty', 'costPrice', 'sellPrice'];
+    const inputs = ['projectName', 'materialSelect', 'wallLength', 'wallHeight', 'wallThickness', 'openingsArea', 'wastePercent', 'betonVol', 'manualQty', 'laborBlockRate', 'laborBetonRate', 'costPrice', 'betonCostRate', 'mortarCostRate', 'sellPrice'];
     inputs.forEach(id => {
         el[id].addEventListener('input', calculate);
     });
@@ -161,6 +178,7 @@ function calculate() {
     const wThk = parseFloat(el.wallThickness.value) || 200; // mm (default 200)
     const oArea = parseFloat(el.openingsArea.value) || 0; // m2
     const wPct = parseFloat(el.wastePercent.value) || 0; // %
+    const bVol = parseFloat(el.betonVol.value) || 0; // m3
     
     // Volume in m3
     const wallVol = (wLen / 1000) * (wHgt / 1000) * (wThk / 1000);
@@ -184,28 +202,38 @@ function calculate() {
     el.resQty.textContent = `${qtyCalc} ${t.pieces}`;
     el.resQtyWaste.textContent = `${qtyWaste} ${t.pieces}`;
     el.resWeight.textContent = `${totalWeightTons.toFixed(2)} ${t.tons}`;
-    el.resMortar.textContent = `${mortarBags} шт`;
+    el.resMortar.textContent = `${mortarBags} ${t.pieces}`;
     el.resTrucks.textContent = `${trucks} шт`;
+    el.resBeton.textContent = `${bVol.toFixed(3)} м³`;
+    
+    // Prorab Labor calc
+    const lBlock = parseFloat(el.laborBlockRate.value) || 0;
+    const lBeton = parseFloat(el.laborBetonRate.value) || 0;
+    const laborTotal = (finalQty * lBlock) + (bVol * lBeton);
+    el.resLaborTotal.textContent = `${laborTotal.toLocaleString('ru-RU')} ₸`;
     
     // Fin calc
     const cPrice = parseFloat(el.costPrice.value) || 0;
+    const cBeton = parseFloat(el.betonCostRate.value) || 0;
+    const cMortar = parseFloat(el.mortarCostRate.value) || 0;
     const sPrice = parseFloat(el.sellPrice.value) || 0;
     
-    const totalCost = finalQty * cPrice;
+    const totalExpense = laborTotal + (finalQty * cPrice) + (bVol * cBeton) + (mortarBags * cMortar);
     const totalRev = finalQty * sPrice;
-    const netProfit = totalRev - totalCost;
+    const netProfit = totalRev - totalExpense;
     
-    el.resTotalCost.textContent = `${totalCost.toLocaleString('ru-RU')} ₸`;
+    el.resTotalCost.textContent = `${totalExpense.toLocaleString('ru-RU')} ₸`;
     el.resNetProfit.textContent = `${netProfit.toLocaleString('ru-RU')} ₸`;
     
     return {
         name: el.projectName.value || 'Без названия',
         matKey,
         matName: mat.name,
-        wLen, wHgt, wThk, oArea, wPct, cleanVol,
+        wLen, wHgt, wThk, oArea, wPct, cleanVol, bVol,
         qtyCalc, qtyWaste, manualQ, finalQty,
         totalWeightTons, mortarBags, trucks,
-        cPrice, sPrice, totalCost, netProfit
+        lBlock, lBeton, laborTotal,
+        cPrice, cBeton, cMortar, sPrice, totalExpense, netProfit
     };
 }
 
@@ -224,8 +252,13 @@ el.saveBtn.addEventListener('click', () => {
             wallThickness: el.wallThickness.value,
             openingsArea: el.openingsArea.value,
             wastePercent: el.wastePercent.value,
+            betonVol: el.betonVol.value,
             manualQty: el.manualQty.value,
+            laborBlockRate: el.laborBlockRate.value,
+            laborBetonRate: el.laborBetonRate.value,
             costPrice: el.costPrice.value,
+            betonCostRate: el.betonCostRate.value,
+            mortarCostRate: el.mortarCostRate.value,
             sellPrice: el.sellPrice.value
         }
     };
@@ -260,8 +293,13 @@ window.loadProject = function(id) {
     el.wallThickness.value = inputs.wallThickness || '';
     el.openingsArea.value = inputs.openingsArea || '';
     el.wastePercent.value = inputs.wastePercent || '7';
+    el.betonVol.value = inputs.betonVol || '';
     el.manualQty.value = inputs.manualQty || '';
+    el.laborBlockRate.value = inputs.laborBlockRate || '';
+    el.laborBetonRate.value = inputs.laborBetonRate || '';
     el.costPrice.value = inputs.costPrice || '';
+    el.betonCostRate.value = inputs.betonCostRate || '';
+    el.mortarCostRate.value = inputs.mortarCostRate || '';
     el.sellPrice.value = inputs.sellPrice || '';
     
     calculate();
@@ -334,11 +372,18 @@ el.tgBtn.addEventListener('click', async () => {
     text += `⚖️ *Общий вес:* ${data.totalWeightTons.toFixed(2)} т\n`;
     text += `🪣 *Смесь/Клей:* ${data.mortarBags} меш. (по 25кг)\n`;
     text += `🚛 *Фур (20т):* ${data.trucks} шт\n`;
+    text += `💧 *Объем бетона:* ${data.bVol.toFixed(3)} м³\n\n`;
+    
+    text += `👷 *Зарплаты (Прорабу):*\n`;
+    text += `Кладка блоков: ${data.lBlock.toLocaleString('ru-RU')} ₸/шт\n`;
+    text += `Заливка бетона: ${data.lBeton.toLocaleString('ru-RU')} ₸/м³\n`;
+    text += `*Итого к выплате:* ${data.laborTotal.toLocaleString('ru-RU')} ₸\n`;
     
     if (currentRole === 'boss') {
-        text += `\n💰 *Финансы (Бюджет):*\n`;
-        text += `Себестоимость: ${data.totalCost.toLocaleString('ru-RU')} ₸\n`;
-        text += `Чистая прибыль: ${data.netProfit.toLocaleString('ru-RU')} ₸\n`;
+        text += `\n💰 *Финансы (Бастык):*\n`;
+        text += `Расход (Мат + Работа): ${data.totalExpense.toLocaleString('ru-RU')} ₸\n`;
+        text += `Продажа заказчику: ${(data.finalQty * data.sPrice).toLocaleString('ru-RU')} ₸\n`;
+        text += `*Чистая прибыль:* ${data.netProfit.toLocaleString('ru-RU')} ₸\n`;
     }
     
     // Generate CSV Content
@@ -351,6 +396,7 @@ el.tgBtn.addEventListener('click', async () => {
     csvContent += `Высота стены (мм);${data.wHgt}\n`;
     csvContent += `Толщина (мм);${data.wThk}\n`;
     csvContent += `Проемы (м2);${data.oArea}\n`;
+    csvContent += `Объем бетона (м3);${data.bVol.toFixed(3)}\n`;
     csvContent += `Чистый объем (м3);${data.cleanVol.toFixed(3)}\n`;
     csvContent += `Кол-во расчетное (шт);${data.qtyCalc}\n`;
     csvContent += `Кол-во с запасом ${data.wPct}% (шт);${data.qtyWaste}\n`;
@@ -365,10 +411,16 @@ el.tgBtn.addEventListener('click', async () => {
     csvContent += `Смесь/Клей меш. по 25кг (шт);${data.mortarBags}\n`;
     csvContent += `Фур по 20т (шт);${data.trucks}\n`;
     
+    csvContent += `Оплата кладка (₸/шт);${data.lBlock}\n`;
+    csvContent += `Оплата бетон (₸/м3);${data.lBeton}\n`;
+    csvContent += `Итого к выплате рабочим (₸);${data.laborTotal}\n`;
+    
     if (currentRole === 'boss') {
-        csvContent += `Закуп (₸/шт);${data.cPrice}\n`;
-        csvContent += `Продажа (₸/шт);${data.sPrice}\n`;
-        csvContent += `Бюджет (Себестоимость, ₸);${data.totalCost}\n`;
+        csvContent += `Закуп блок (₸/шт);${data.cPrice}\n`;
+        csvContent += `Закуп бетон (₸/м3);${data.cBeton}\n`;
+        csvContent += `Закуп клей (₸/меш);${data.cMortar}\n`;
+        csvContent += `Продажа заказчику (₸/шт);${data.sPrice}\n`;
+        csvContent += `Общий расход мат+работа (₸);${data.totalExpense}\n`;
         csvContent += `Чистая прибыль (₸);${data.netProfit}\n`;
     }
     
