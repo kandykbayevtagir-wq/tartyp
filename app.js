@@ -1,66 +1,355 @@
-const materialsData = {
-    gazoblok: { name: 'Газоблок (600x300x200)', vol: 0.036, weight: 22, bagsPerM3: 1 },
-    brick: { name: 'Кирпич 1NF (250x120x65)', vol: 0.00195, weight: 3.5, bagsPerM3: 15.3 },
-    shlakoblok: { name: 'Шлакоблок (390x190x188)', vol: 0.01393, weight: 18, bagsPerM3: 5.1 }
-};
+/**
+ * TARTYP Mobile Engineering CRM & Calculator v2.5
+ * Core Application Logic, Localization, Calculation Engine & Reporting
+ */
 
-const i18n = {
-    ru: {
-        settings: "Настройки", language: "Язык / Тіл", role: "Роль", reset: "Сбросить данные",
-        navCalc: "Счет", navArchive: "Архив", navSettings: "Настройки",
-        projName: "Название объекта", material: "Материал",
-        wallLen: "Длина стены (мм)", wallHgt: "Высота стены (мм)", wallThk: "Толщина (мм)", openings: "Проемы (м²)", wastePct: "Бой (%)", betonVol: "Бетон (м³)",
-        techResults: "Технические результаты", cleanArea: "Чистый объем (м³):", qtyCalc: "Кол-во (расчетное):",
-        qtyWaste: "С запасом:", totalWeight: "Общий вес:", mortar: "Смесь/Клей (меш. 25кг):", trucks: "Фур (по 20т):", resBeton: "Объем бетона:", manualQty: "Итоговое количество блоков (ручной ввод шт)",
-        prorabBlock: "Блок Прораба (Зарплаты)", laborBlock: "Кладка (за 1 шт, ₸)", laborBeton: "Бетон (за 1 м³, ₸)", laborTotal: "К выплате рабочим:",
-        finBlock: "Блок Бастыка (Финансы)", costPrice: "Блок (закуп, ₸)", costBeton: "Бетон (закуп 1м³, ₸)", costMortar: "Клей (закуп 1меш, ₸)", sellPrice: "Продажа блоков заказчику (за 1 шт, ₸)",
-        totalCost: "Расход (Мат + Работа):", netProfit: "Чистая прибыль:", saveBtn: "Сохранить в Архив",
-        tgBtn: "Отправить отчет (с Excel)",
-        delConfirm: "Точно удалить?", pieces: "шт", tons: "т", noData: "Нет сохраненных проектов",
-        guideTitle: "Инструкция по калькулятору",
-        guideText: `<p><b>1. Размеры:</b> Длину, Высоту и Толщину стены вводим строго в миллиметрах (мм). <i>Например, 5 метров — это 5000.</i></p>
-                    <p style="margin-top: 10px;"><b>2. Проемы и Бетон:</b> Площадь окон (м²) и объем бетона на перемычки/армопояс (м³).</p>
-                    <p style="margin-top: 10px;"><b>3. Зарплаты:</b> Прораб вводит ставки за кладку блока и куб бетона, чтобы сразу видеть итоговую зарплату бригаде.</p>
-                    <p style="margin-top: 10px;"><b>4. Финансы (Бастык):</b> Бастык видит скрытый блок для ввода закупочных цен на материалы и цену продажи, чтобы рассчитать чистую прибыль.</p>`
+// Materials specification library standard for Central Asia & CIS
+const materialsData = {
+    gazoblok_200: { 
+        name: 'Газоблок D500 (600×300×200 мм) — стеновой',
+        shortName: 'Газоблок 600×300×200',
+        vol: 0.036, 
+        weight: 22.0, 
+        bagsPerM3: 1.0, 
+        perPallet: 40 
     },
-    kz: {
-        settings: "Баптаулар", language: "Язык / Тіл", role: "Рөлі", reset: "Деректерді жою",
-        navCalc: "Есеп", navArchive: "Мұрағат", navSettings: "Баптаулар",
-        projName: "Нысан атауы", material: "Материал",
-        wallLen: "Ұзындығы (мм)", wallHgt: "Биіктігі (мм)", wallThk: "Қалыңдығы (мм)", openings: "Ойықтар (м²)", wastePct: "Бой (%)", betonVol: "Бетон (м³)",
-        techResults: "Техникалық нәтижелер", cleanArea: "Таза көлем (м³):", qtyCalc: "Саны (есептелген):",
-        qtyWaste: "Қормен:", totalWeight: "Жалпы салмағы:", mortar: "Қоспа/Желім (қап 25кг):", trucks: "Фуралар (20т-дан):", resBeton: "Бетон көлемі:", manualQty: "Қорытынды блок саны (қолмен енгізу)",
-        prorabBlock: "Прораб блогы (Жалақы)", laborBlock: "Қалау (1 дана үшін, ₸)", laborBeton: "Бетон (1 м³ үшін, ₸)", laborTotal: "Жұмысшыларға төлем:",
-        finBlock: "Бастық блогы (Қаржы)", costPrice: "Блок (сатып алу, ₸)", costBeton: "Бетон (сатып алу 1м³, ₸)", costMortar: "Желім (сатып алу 1қап, ₸)", sellPrice: "Тапсырыс берушіге сату (1 дана үшін, ₸)",
-        totalCost: "Шығын (Мат + Жұмыс):", netProfit: "Таза пайда:", saveBtn: "Мұрағатқа сақтау",
-        tgBtn: "Есепті жіберу (Excel-мен)",
-        delConfirm: "Өшіруге сенімдісіз бе?", pieces: "дана", tons: "т", noData: "Сақталған жобалар жоқ",
-        guideTitle: "Калькулятор нұсқаулығы",
-        guideText: `<p><b>1. Өлшемдер:</b> Қабырғаның ұзындығын, биіктігін және қалыңдығын қатаң түрде миллиметрмен (мм) енгіземіз. <i>Мысалы, 5 метр — бұл 5000.</i></p>
-                    <p style="margin-top: 10px;"><b>2. Ойықтар және Бетон:</b> Терезелер ауданы (м²) және бетон көлемі (м³).</p>
-                    <p style="margin-top: 10px;"><b>3. Жалақы:</b> Прораб бригаданың жалпы жалақысын көру үшін ставкаларды енгізеді.</p>
-                    <p style="margin-top: 10px;"><b>4. Қаржы (Бастық):</b> Бастық таза пайданы есептеу үшін материалдар мен сату бағаларын енгізеді.</p>`
+    gazoblok_100: { 
+        name: 'Газоблок D500 (600×300×100 мм) — перегородочный',
+        shortName: 'Газоблок 600×300×100',
+        vol: 0.018, 
+        weight: 11.0, 
+        bagsPerM3: 1.2, 
+        perPallet: 80 
+    },
+    gazoblok_250: { 
+        name: 'Газоблок D500 (600×300×250 мм) — усиленный',
+        shortName: 'Газоблок 600×300×250',
+        vol: 0.045, 
+        weight: 27.5, 
+        bagsPerM3: 0.9, 
+        perPallet: 32 
+    },
+    gazoblok_400: { 
+        name: 'Газоблок D500 (600×400×200 мм) — тепловой',
+        shortName: 'Газоблок 600×400×200',
+        vol: 0.048, 
+        weight: 29.3, 
+        bagsPerM3: 0.85, 
+        perPallet: 30 
+    },
+    brick_1nf: { 
+        name: 'Кирпич керамический 1NF (250×120×65 мм)',
+        shortName: 'Кирпич 1NF (250×120×65)',
+        vol: 0.00195, 
+        weight: 3.5, 
+        bagsPerM3: 15.3, 
+        perPallet: 384 
+    },
+    brick_14nf: { 
+        name: 'Кирпич полуторный 1.4NF (250×120×88 мм)',
+        shortName: 'Кирпич 1.4NF (250×120×88)',
+        vol: 0.00264, 
+        weight: 4.8, 
+        bagsPerM3: 12.5, 
+        perPallet: 308 
+    },
+    brick_21nf: { 
+        name: 'Кирпич двойной 2.1NF (250×120×140 мм)',
+        shortName: 'Кирпич 2.1NF (250×120×140)',
+        vol: 0.0042, 
+        weight: 7.2, 
+        bagsPerM3: 9.8, 
+        perPallet: 180 
+    },
+    shlakoblok: { 
+        name: 'Шлакоблок стандарт (390×190×188 мм)',
+        shortName: 'Шлакоблок 390×190×188',
+        vol: 0.01393, 
+        weight: 18.0, 
+        bagsPerM3: 5.1, 
+        perPallet: 72 
+    },
+    penoblok: { 
+        name: 'Пеноблок D600 (600×300×200 мм)',
+        shortName: 'Пеноблок 600×300×200',
+        vol: 0.036, 
+        weight: 24.0, 
+        bagsPerM3: 1.0, 
+        perPallet: 40 
+    },
+    teploblok: { 
+        name: 'Теплоблок (400×200×300 мм)',
+        shortName: 'Теплоблок 400×200×300',
+        vol: 0.024, 
+        weight: 23.0, 
+        bagsPerM3: 2.5, 
+        perPallet: 54 
+    },
+    spliter: { 
+        name: 'Сплитерный блок (390×190×190 мм)',
+        shortName: 'Сплитер 390×190×190',
+        vol: 0.01408, 
+        weight: 19.0, 
+        bagsPerM3: 4.8, 
+        perPallet: 60 
     }
 };
 
+// Bilingual Interface Dictionary (Russian & Kazakh)
+const i18n = {
+    ru: {
+        cardGeneral: "Объект и Материал",
+        cardGeo: "Размеры стен",
+        cardOpenings: "Проемы, Бетон и Запас",
+        projName: "Название объекта",
+        material: "Материал кладки",
+        wallLen: "Длина",
+        wallHgt: "Высота",
+        wallThk: "Толщина",
+        openings: "Проемы",
+        wastePct: "Бой/Запас",
+        betonVol: "Бетон",
+        techResults: "Инженерный расчет",
+        qtyWaste: "ИТОГО БЛОКОВ (С ЗАПАСОМ):",
+        qtyCalc: "Кол-во (точное):",
+        pallets: "Паллет / Поддонов:",
+        cleanVol: "Объем кладки:",
+        cleanArea: "Чистая площадь стен:",
+        mortar: "Клей / Сухая смесь (меш. 25кг):",
+        resBeton: "Объем бетона (армопояс):",
+        totalWeight: "Общий вес материалов:",
+        trucks: "Фур для доставки (по 20т):",
+        manualQty: "Корректировка количества вручную",
+        prorabBlock: "Блок Прораба (Зарплата бригаде)",
+        laborBlock: "Кладка (1 шт)",
+        laborBeton: "Бетон (1 м³)",
+        laborTotal: "К выплате рабочим:",
+        finBlock: "Блок Бастыка (Финансы и Маржа)",
+        costPrice: "Закуп блока",
+        costBeton: "Закуп бетона",
+        costMortar: "Закуп клея",
+        sellPrice: "Продажа блока заказчику",
+        sellBeton: "Продажа бетона клиенту",
+        matExpense: "Затраты на материалы:",
+        laborExpense: "Затраты на бригаду:",
+        totalCost: "Общий расход (себестоимость):",
+        totalRevenue: "Выручка от заказчика:",
+        netProfit: "ЧИСТАЯ ПРИБЫЛЬ ОБЪЕКТА:",
+        margin: "Рентабельность сделки:",
+        saveBtn: "В Архив",
+        excelBtn: "Скачать Excel",
+        tgBtn: "Отправить отчет в Telegram",
+        archiveTitle: "Сохраненные сметы",
+        clearAll: "Очистить всё",
+        settings: "Настройки системы",
+        language: "Язык интерфейса / Тіл",
+        role: "Рабочий режим",
+        reset: "Сбросить все данные",
+        guideTitle: "Инженерная инструкция",
+        navCalc: "Калькулятор",
+        navArchive: "Архив",
+        navSettings: "Настройки",
+        roleWorker: "ПРОРАБ",
+        roleBoss: "БАСТЫҚ",
+        pieces: "шт",
+        tons: "т",
+        noData: "В архиве пока нет сохраненных расчетов",
+        savedSuccess: "Смета сохранена в архив!",
+        deletedSuccess: "Запись удалена!",
+        clearConfirm: "Удалить все сохраненные расчеты из архива?",
+        resetConfirm: "Сбросить все данные приложения?",
+        tgSending: "Отправка в Telegram...",
+        tgSuccess: "Отчет успешно отправлен в Telegram!",
+        tgError: "Ошибка при отправке в Telegram!",
+        excelDownloaded: "Файл Excel успешно скачан!",
+        guideSteps: [
+            {
+                title: "1. Замеры и миллиметры (мм)",
+                body: "Все размеры стен вводятся строго в <b>миллиметрах</b>: 5 метров = <code>5000</code>, 2.8 метра = <code>2800</code>. Это исключает ошибки при дробях."
+            },
+            {
+                title: "2. Вычет проемов (м²)",
+                body: "Суммируйте площадь окон и дверей в квадратных метрах (м²). Система автоматически вычтет этот объем из кладки, сэкономив деньги на покупке блоков."
+            },
+            {
+                title: "3. Армопояс и бетон (м³)",
+                body: "Введите кубатуру заливки бетона на перемычки и пояс. Калькулятор посчитает вес и позволит отдельно рассчитать оплату бетонщикам."
+            },
+            {
+                title: "4. Зарплаты бригаде (Блок Прораба)",
+                body: "Укажите расценку кладки за 1 блок (например, 150 ₸) и куб бетона (например, 20 000 ₸). Приложение моментально выдает итоговую сумму к выдаче рабочим."
+            },
+            {
+                title: "5. Чистая прибыль (Блок Бастыка)",
+                body: "Директор включает режим «Бастық», вводит закупочные цены и цену для клиента. Система вычитает материалы и работу, показывая чистый заработок объекта."
+            }
+        ]
+    },
+    kz: {
+        cardGeneral: "Нысан және Материал",
+        cardGeo: "Қабырға өлшемдері",
+        cardOpenings: "Ойықтар, Бетон және Қор",
+        projName: "Нысан атауы",
+        material: "Қалау материалы",
+        wallLen: "Ұзындығы",
+        wallHgt: "Биіктігі",
+        wallThk: "Қалыңдығы",
+        openings: "Ойықтар",
+        wastePct: "Бой/Қор",
+        betonVol: "Бетон",
+        techResults: "Инженерлік есептеу",
+        qtyWaste: "БАРЛЫҒЫ БЛОК (ҚОРМЕН):",
+        qtyCalc: "Саны (дәл):",
+        pallets: "Тұғыр / Паллет саны:",
+        cleanVol: "Қалау көлемі:",
+        cleanArea: "Қабырғаның таза ауданы:",
+        mortar: "Желім / Қоспа (қап 25кг):",
+        resBeton: "Бетон көлемі (белдеу):",
+        totalWeight: "Жалпы салмағы:",
+        trucks: "Жеткізу фуралары (20т):",
+        manualQty: "Блок санын қолмен түзету",
+        prorabBlock: "Прораб блогы (Бригада жалақысы)",
+        laborBlock: "Қалау (1 дана)",
+        laborBeton: "Бетон (1 м³)",
+        laborTotal: "Жұмысшыларға төлем:",
+        finBlock: "Бастық блогы (Қаржы және Пайда)",
+        costPrice: "Блок сатып алу",
+        costBeton: "Бетон сатып алу",
+        costMortar: "Желім сатып алу",
+        sellPrice: "Блокты сату бағасы",
+        sellBeton: "Бетонды сату бағасы",
+        matExpense: "Материал шығындары:",
+        laborExpense: "Бригадаға төлем:",
+        totalCost: "Жалпы шығын (өзіндік құн):",
+        totalRevenue: "Тапсырыс берушіден түсім:",
+        netProfit: "НЫСАННЫҢ ТАЗА ПАЙДАСЫ:",
+        margin: "Мәміле табыстылығы:",
+        saveBtn: "Мұрағатқа",
+        excelBtn: "Excel жүктеу",
+        tgBtn: "Telegram-ға жіберу",
+        archiveTitle: "Сақталған сметалар",
+        clearAll: "Барлығын өшіру",
+        settings: "Жүйе баптаулары",
+        language: "Интерфейс тілі",
+        role: "Жұмыс режимі",
+        reset: "Деректерді жою",
+        guideTitle: "Инженерлік нұсқаулық",
+        navCalc: "Есептеу",
+        navArchive: "Мұрағат",
+        navSettings: "Баптаулар",
+        roleWorker: "ПРОРАБ",
+        roleBoss: "БАСТЫҚ",
+        pieces: "дана",
+        tons: "т",
+        noData: "Мұрағатта әзірге сақталған есептер жоқ",
+        savedSuccess: "Смета мұрағатқа сақталды!",
+        deletedSuccess: "Жазба өшірілді!",
+        clearConfirm: "Мұрағаттағы барлық есептерді өшіру керек пе?",
+        resetConfirm: "Қосымшаның барлық деректерін тазарту керек пе?",
+        tgSending: "Telegram-ға жіберілуде...",
+        tgSuccess: "Есеп Telegram-ға сәтті жіберілді!",
+        tgError: "Telegram-ға жіберуде қате шықты!",
+        excelDownloaded: "Excel файлы сәтті жүктелді!",
+        guideSteps: [
+            {
+                title: "1. Өлшемдер және миллиметр (мм)",
+                body: "Қабырға өлшемдері тек <b>миллиметрмен</b> енгізіледі: 5 метр = <code>5000</code>, 2.8 метр = <code>2800</code>. Бұл қателіктерден сақтайды."
+            },
+            {
+                title: "2. Ойықтарды шегеру (м²)",
+                body: "Есіктер мен терезелердің ауданын шаршы метрмен (м²) қосыңыз. Жүйе бұл көлемді қалаудан шегеріп, артық шығынды азайтады."
+            },
+            {
+                title: "3. Армопояс және бетон (м³)",
+                body: "Армопояс пен белдеудің бетон көлемін (м³) енгізіңіз. Калькулятор салмақты және бетон құюшылардың ақысын автоматты түрде есептейді."
+            },
+            {
+                title: "4. Бригада жалақысы (Прораб блогы)",
+                body: "1 блокты қалау ставкасын (мысалы, 150 ₸) және бетонның кубын көрсетіңіз. Бағдарлама бригадаға берілетін таза жалақыны көрсетеді."
+            },
+            {
+                title: "5. Таза пайда (Бастық блогы)",
+                body: "Бастық сатып алу және сату бағаларын енгізеді. Жүйе шығындар мен жалақыны шегеріп, нысанның нақты таза табысын шығарып береді."
+            }
+        ]
+    }
+};
+
+// Global App State
 let currentLang = localStorage.getItem('tartyp_lang') || 'ru';
-let currentRole = localStorage.getItem('tartyp_role') || 'worker';
+let currentRole = localStorage.getItem('tartyp_role') || 'worker'; // 'worker' or 'boss'
 let projects = JSON.parse(localStorage.getItem('tartyp_projects') || '[]');
 
-// DOM Elements
-const el = {
-    langSelect: document.getElementById('langSelect'),
-    roleSelect: document.getElementById('roleSelect'),
+if (projects.length === 0) {
+    projects = [
+        {
+            id: 1713500000000,
+            date: '14.10.2026 14:30',
+            projectName: 'ЖК BI City, Корпус 3',
+            matKey: 'gazoblok_200',
+            matName: 'Газоблок D500 (600×300×200 мм) — стеновой',
+            matShort: 'Газоблок 600×300×200',
+            wLen: 12000, wHgt: 3200, wThk: 200, oArea: 6.8, wPct: 7, bVol: 2.4,
+            netWallArea: 31.6, netMasonryVol: 6.32,
+            exactQty: 176, wasteQty: 189, hasManual: false, finalQty: 189,
+            pallets: 5, mortarBags: 7, totalWeightTons: 10.1, trucksCount: 1,
+            lBlock: 150, lBeton: 20000, laborMasonry: 28350, laborConcrete: 48000, totalLaborWages: 76350,
+            cBlock: 650, cBeton: 25000, cMortar: 1800, sBlock: 1200,
+            matExpenses: 195450, totalExpenses: 271800, totalRevenue: 226800, netProfit: 145000, marginPct: 35.2,
+            inputs: {
+                projectName: 'ЖК BI City, Корпус 3',
+                materialSelect: 'gazoblok_200',
+                wallLength: '12000', wallHeight: '3200', wallThickness: '200',
+                openingsArea: '6.8', wastePercent: '7', betonVol: '2.4',
+                manualQty: '', laborBlockRate: '150', laborBetonRate: '20000',
+                costPrice: '650', betonCostRate: '25000', mortarCostRate: '1800', sellPrice: '1200'
+            }
+        },
+        {
+            id: 1713400000000,
+            date: '12.10.2026 10:15',
+            projectName: 'Коттеджный городок Нура',
+            matKey: 'brick_1nf',
+            matName: 'Кирпич керамический 1NF (250×120×65 мм)',
+            matShort: 'Кирпич 1NF (250×120×65)',
+            wLen: 18000, wHgt: 3000, wThk: 380, oArea: 9.5, wPct: 8, bVol: 3.5,
+            netWallArea: 44.5, netMasonryVol: 16.91,
+            exactQty: 8672, wasteQty: 9366, hasManual: false, finalQty: 9366,
+            pallets: 25, mortarBags: 259, totalWeightTons: 47.7, trucksCount: 3,
+            lBlock: 25, lBeton: 22000, laborMasonry: 234150, laborConcrete: 77000, totalLaborWages: 311150,
+            cBlock: 65, cBeton: 26000, cMortar: 1500, sBlock: 120,
+            matExpenses: 1088290, totalExpenses: 1399440, totalRevenue: 1123920, netProfit: 520000, marginPct: 27.1,
+            inputs: {
+                projectName: 'Коттеджный городок Нура',
+                materialSelect: 'brick_1nf',
+                wallLength: '18000', wallHeight: '3000', wallThickness: '380',
+                openingsArea: '9.5', wastePercent: '8', betonVol: '3.5',
+                manualQty: '', laborBlockRate: '25', laborBetonRate: '22000',
+                costPrice: '65', betonCostRate: '26000', mortarCostRate: '1500', sellPrice: '120'
+            }
+        }
+    ];
+    localStorage.setItem('tartyp_projects', JSON.stringify(projects));
+}
+
+// DOM Elements Cache
+const dom = {
+    // Header controls
+    quickRoleBadge: document.getElementById('quickRoleBadge'),
+    headerRoleIcon: document.getElementById('headerRoleIcon'),
+    headerRoleText: document.getElementById('headerRoleText'),
+    langRuBtn: document.getElementById('langRuBtn'),
+    langKzBtn: document.getElementById('langKzBtn'),
+    toast: document.getElementById('toast'),
+
+    // Navigation & Views
     navCalc: document.getElementById('navCalc'),
     navArchive: document.getElementById('navArchive'),
     navSettings: document.getElementById('navSettings'),
     calcView: document.getElementById('calcView'),
     archiveView: document.getElementById('archiveView'),
     settingsView: document.getElementById('settingsView'),
-    archiveList: document.getElementById('archiveList'),
-    finBlock: document.getElementById('financialBlock'),
-    resetBtn: document.getElementById('resetDataBtn'),
-    
+
     // Inputs
     projectName: document.getElementById('projectName'),
     materialSelect: document.getElementById('materialSelect'),
@@ -71,453 +360,777 @@ const el = {
     wastePercent: document.getElementById('wastePercent'),
     betonVol: document.getElementById('betonVol'),
     manualQty: document.getElementById('manualQty'),
+
+    // Prorab Rates
     laborBlockRate: document.getElementById('laborBlockRate'),
     laborBetonRate: document.getElementById('laborBetonRate'),
+    resLaborTotal: document.getElementById('resLaborTotal'),
+
+    // Bastyk Inputs & Fin Block
+    financialBlock: document.getElementById('financialBlock'),
     costPrice: document.getElementById('costPrice'),
     betonCostRate: document.getElementById('betonCostRate'),
     mortarCostRate: document.getElementById('mortarCostRate'),
     sellPrice: document.getElementById('sellPrice'),
-    
-    // Results
-    resCleanArea: document.getElementById('resCleanArea'),
-    resQty: document.getElementById('resQty'),
-    resQtyWaste: document.getElementById('resQtyWaste'),
-    resWeight: document.getElementById('resWeight'),
-    resMortar: document.getElementById('resMortar'),
-    resTrucks: document.getElementById('resTrucks'),
-    resBeton: document.getElementById('resBeton'),
-    resLaborTotal: document.getElementById('resLaborTotal'),
+    sellBetonPrice: document.getElementById('sellBetonPrice'),
+    resMatExpense: document.getElementById('resMatExpense'),
+    resLaborExpense: document.getElementById('resLaborExpense'),
     resTotalCost: document.getElementById('resTotalCost'),
+    resRevenue: document.getElementById('resRevenue'),
     resNetProfit: document.getElementById('resNetProfit'),
-    
-    // Actions
+    resMargin: document.getElementById('resMargin'),
+
+    // Technical Results
+    resQtyWaste: document.getElementById('resQtyWaste'),
+    resQty: document.getElementById('resQty'),
+    resPallets: document.getElementById('resPallets'),
+    resCleanVol: document.getElementById('resCleanVol'),
+    resCleanArea: document.getElementById('resCleanArea'),
+    resMortar: document.getElementById('resMortar'),
+    resBeton: document.getElementById('resBeton'),
+    resWeight: document.getElementById('resWeight'),
+    resTrucks: document.getElementById('resTrucks'),
+
+    // Buttons
     saveBtn: document.getElementById('saveBtn'),
-    tgBtn: document.getElementById('tgBtn')
+    exportExcelBtn: document.getElementById('exportExcelBtn'),
+    tgBtn: document.getElementById('tgBtn'),
+    clearArchiveBtn: document.getElementById('clearArchiveBtn'),
+    archiveList: document.getElementById('archiveList'),
+    langSelect: document.getElementById('langSelect'),
+    roleSelect: document.getElementById('roleSelect'),
+    resetDataBtn: document.getElementById('resetDataBtn'),
+    guideContent: document.getElementById('guideContent')
 };
 
-// Vibrate helper
-function vibe() {
-    if (navigator.vibrate) navigator.vibrate(15);
-}
-
-// Translate UI
-function applyTranslation() {
-    const t = i18n[currentLang];
-    document.getElementById('t-settings').textContent = t.settings;
-    document.getElementById('t-language').textContent = t.language;
-    document.getElementById('t-role').textContent = t.role;
-    document.getElementById('t-reset').textContent = t.reset;
-    document.getElementById('t-nav-calc').textContent = t.navCalc;
-    document.getElementById('t-nav-archive').textContent = t.navArchive;
-    document.getElementById('t-nav-settings').textContent = t.navSettings;
-    document.getElementById('t-proj-name').textContent = t.projName;
-    document.getElementById('t-material').textContent = t.material;
-    document.getElementById('t-wall-len').textContent = t.wallLen;
-    document.getElementById('t-wall-hgt').textContent = t.wallHgt;
-    document.getElementById('t-wall-thk').textContent = t.wallThk;
-    document.getElementById('t-openings').textContent = t.openings;
-    document.getElementById('t-waste-pct').textContent = t.wastePct;
-    document.getElementById('t-beton-vol').textContent = t.betonVol;
-    document.getElementById('t-tech-results').textContent = t.techResults;
-    document.getElementById('t-clean-area').textContent = t.cleanArea;
-    document.getElementById('t-qty-calc').textContent = t.qtyCalc;
-    document.getElementById('t-qty-waste').textContent = t.qtyWaste;
-    document.getElementById('t-total-weight').textContent = t.totalWeight;
-    document.getElementById('t-mortar').textContent = t.mortar;
-    document.getElementById('t-trucks').textContent = t.trucks;
-    document.getElementById('t-res-beton').textContent = t.resBeton;
-    document.getElementById('t-manual-qty').textContent = t.manualQty;
-    document.getElementById('t-prorab-block').textContent = t.prorabBlock;
-    document.getElementById('t-labor-block').textContent = t.laborBlock;
-    document.getElementById('t-labor-beton').textContent = t.laborBeton;
-    document.getElementById('t-labor-total').textContent = t.laborTotal;
-    document.getElementById('t-fin-block').textContent = t.finBlock;
-    document.getElementById('t-cost-price').textContent = t.costPrice;
-    document.getElementById('t-cost-beton').textContent = t.costBeton;
-    document.getElementById('t-cost-mortar').textContent = t.costMortar;
-    document.getElementById('t-sell-price').textContent = t.sellPrice;
-    document.getElementById('t-total-cost').textContent = t.totalCost;
-    document.getElementById('t-net-profit').textContent = t.netProfit;
-    document.getElementById('t-save-btn').textContent = t.saveBtn;
-    document.getElementById('t-tg-btn').textContent = t.tgBtn;
-    document.getElementById('t-guide-title').textContent = t.guideTitle;
-    document.getElementById('t-guide-text').innerHTML = t.guideText;
-    calculate();
-}
-
-// Initialization
-function init() {
-    el.langSelect.value = currentLang;
-    el.roleSelect.value = currentRole;
-    updateRoleView();
-    applyTranslation();
-    renderArchive();
-    
-    // Listeners for inputs
-    const inputs = ['projectName', 'materialSelect', 'wallLength', 'wallHeight', 'wallThickness', 'openingsArea', 'wastePercent', 'betonVol', 'manualQty', 'laborBlockRate', 'laborBetonRate', 'costPrice', 'betonCostRate', 'mortarCostRate', 'sellPrice'];
-    inputs.forEach(id => {
-        el[id].addEventListener('input', calculate);
-    });
-}
-
-// Role toggle
-function updateRoleView() {
-    if (currentRole === 'boss') {
-        el.finBlock.classList.remove('hidden');
-    } else {
-        el.finBlock.classList.add('hidden');
+// Haptic Vibration helper
+function vibe(ms = 15) {
+    if (navigator.vibrate) {
+        try { navigator.vibrate(ms); } catch (e) {}
     }
 }
 
-// Calculate logic
+// Floating Toast Notification
+let toastTimeout;
+function showToast(message, type = 'info') {
+    if (!dom.toast) return;
+    clearTimeout(toastTimeout);
+    dom.toast.textContent = message;
+    dom.toast.className = `show ${type}`;
+    toastTimeout = setTimeout(() => {
+        dom.toast.className = '';
+    }, 2500);
+}
+
+// Number Formatter helper (Kazakhstan tenge / Russian format)
+function formatNum(num, decimals = 0) {
+    if (isNaN(num) || num === null) return '0';
+    return Number(num).toLocaleString('ru-RU', {
+        minimumFractionDigits: decimals,
+        maximumFractionDigits: decimals
+    });
+}
+
+// Apply Selected Language
+function applyLanguage(lang) {
+    currentLang = lang;
+    localStorage.setItem('tartyp_lang', lang);
+    const t = i18n[lang];
+
+    // Toggle header lang buttons state
+    if (dom.langRuBtn && dom.langKzBtn) {
+        dom.langRuBtn.classList.toggle('active', lang === 'ru');
+        dom.langKzBtn.classList.toggle('active', lang === 'kz');
+    }
+    if (dom.langSelect) {
+        dom.langSelect.value = lang;
+    }
+
+    // Translate static labels
+    const setText = (id, text) => {
+        const el = document.getElementById(id);
+        if (el) el.textContent = text;
+    };
+
+    setText('t-card-general', t.cardGeneral);
+    setText('t-card-geo', t.cardGeo);
+    setText('t-card-openings', t.cardOpenings);
+    setText('t-proj-name', t.projName);
+    setText('t-material', t.material);
+    setText('t-wall-len', t.wallLen);
+    setText('t-wall-hgt', t.wallHgt);
+    setText('t-wall-thk', t.wallThk);
+    setText('t-openings', t.openings);
+    setText('t-waste-pct', t.wastePct);
+    setText('t-beton-vol', t.betonVol);
+    setText('t-tech-results', t.techResults);
+    setText('t-qty-waste', t.qtyWaste);
+    setText('t-qty-calc', t.qtyCalc);
+    setText('t-pallets', t.pallets);
+    setText('t-clean-vol', t.cleanVol);
+    setText('t-clean-area', t.cleanArea);
+    setText('t-mortar', t.mortar);
+    setText('t-res-beton', t.resBeton);
+    setText('t-total-weight', t.totalWeight);
+    setText('t-trucks', t.trucks);
+    setText('t-manual-qty', t.manualQty);
+    setText('t-prorab-block', t.prorabBlock);
+    setText('t-labor-block', t.laborBlock);
+    setText('t-labor-beton', t.laborBeton);
+    setText('t-labor-total', t.laborTotal);
+    setText('t-fin-block', t.finBlock);
+    setText('t-cost-price', t.costPrice);
+    setText('t-cost-beton', t.costBeton);
+    setText('t-cost-mortar', t.costMortar);
+    setText('t-sell-price', t.sellPrice);
+    setText('t-sell-beton', t.sellBeton);
+    setText('t-mat-expense', t.matExpense);
+    setText('t-labor-expense', t.laborExpense);
+    setText('t-total-cost', t.totalCost);
+    setText('t-total-revenue', t.totalRevenue);
+    setText('t-net-profit', t.netProfit);
+    setText('t-margin', t.margin);
+    setText('t-save-btn', t.saveBtn);
+    setText('t-excel-btn', t.excelBtn);
+    setText('t-tg-btn', t.tgBtn);
+    setText('t-archive-title', t.archiveTitle);
+    setText('t-clear-all', t.clearAll);
+    setText('t-settings', t.settings);
+    setText('t-language', t.language);
+    setText('t-role', t.role);
+    setText('t-reset', t.reset);
+    setText('t-guide-title', t.guideTitle);
+    setText('t-nav-calc', t.navCalc);
+    setText('t-nav-archive', t.navArchive);
+    setText('t-nav-settings', t.navSettings);
+
+    // Update Header Role Badge text
+    updateRoleUI();
+
+    // Render localized guide steps
+    renderGuide();
+
+    // Re-render calculations & archive
+    calculate();
+    renderArchive();
+}
+
+// Render Interactive Guide
+function renderGuide() {
+    if (!dom.guideContent) return;
+    const steps = i18n[currentLang].guideSteps;
+    dom.guideContent.innerHTML = steps.map(step => `
+        <div class="guide-step">
+            <div class="guide-step-title">
+                <span>📌</span>
+                <span>${step.title}</span>
+            </div>
+            <div class="guide-step-body">${step.body}</div>
+        </div>
+    `).join('');
+}
+
+// Role Management (Worker / Boss)
+function setRole(role) {
+    currentRole = role;
+    localStorage.setItem('tartyp_role', role);
+    if (dom.roleSelect) dom.roleSelect.value = role;
+    updateRoleUI();
+    calculate();
+}
+
+function updateRoleUI() {
+    const t = i18n[currentLang];
+    const isBoss = currentRole === 'boss';
+
+    if (dom.headerRoleIcon && dom.headerRoleText && dom.quickRoleBadge) {
+        dom.headerRoleIcon.textContent = isBoss ? '👑' : '👷';
+        dom.headerRoleText.textContent = isBoss ? t.roleBoss : t.roleWorker;
+        dom.quickRoleBadge.classList.toggle('boss-active', isBoss);
+    }
+
+    if (dom.financialBlock) {
+        if (isBoss) {
+            dom.financialBlock.classList.remove('hidden');
+        } else {
+            dom.financialBlock.classList.add('hidden');
+        }
+    }
+}
+
+// Core Mathematical Engine
 function calculate() {
     const t = i18n[currentLang];
-    
-    const wLen = parseFloat(el.wallLength.value) || 0; // mm
-    const wHgt = parseFloat(el.wallHeight.value) || 0; // mm
-    const wThk = parseFloat(el.wallThickness.value) || 200; // mm (default 200)
-    const oArea = parseFloat(el.openingsArea.value) || 0; // m2
-    const wPct = parseFloat(el.wastePercent.value) || 0; // %
-    const bVol = parseFloat(el.betonVol.value) || 0; // m3
-    
-    // Volume in m3
-    const wallVol = (wLen / 1000) * (wHgt / 1000) * (wThk / 1000);
-    const openingsVol = oArea * (wThk / 1000);
-    const cleanVol = Math.max(0, wallVol - openingsVol);
-    
-    const matKey = el.materialSelect.value;
-    const mat = materialsData[matKey];
-    
-    const qtyCalc = cleanVol > 0 ? Math.ceil(cleanVol / mat.vol) : 0;
-    const qtyWaste = Math.ceil(qtyCalc * (1 + (wPct / 100)));
-    
-    const manualQ = parseInt(el.manualQty.value);
-    const finalQty = !isNaN(manualQ) && manualQ > 0 ? manualQ : qtyWaste;
-    
-    const totalWeightTons = (finalQty * mat.weight) / 1000;
-    const mortarBags = Math.ceil(cleanVol * mat.bagsPerM3);
-    const trucks = Math.ceil(totalWeightTons / 20); // 1 truck = 20 tons
-    
-    el.resCleanArea.textContent = `${cleanVol.toFixed(3)} м³`;
-    el.resQty.textContent = `${qtyCalc} ${t.pieces}`;
-    el.resQtyWaste.textContent = `${qtyWaste} ${t.pieces}`;
-    el.resWeight.textContent = `${totalWeightTons.toFixed(2)} ${t.tons}`;
-    el.resMortar.textContent = `${mortarBags} ${t.pieces}`;
-    el.resTrucks.textContent = `${trucks} шт`;
-    el.resBeton.textContent = `${bVol.toFixed(3)} м³`;
-    
-    // Prorab Labor calc
-    const lBlock = parseFloat(el.laborBlockRate.value) || 0;
-    const lBeton = parseFloat(el.laborBetonRate.value) || 0;
-    const laborTotal = (finalQty * lBlock) + (bVol * lBeton);
-    el.resLaborTotal.textContent = `${laborTotal.toLocaleString('ru-RU')} ₸`;
-    
-    // Fin calc
-    const cPrice = parseFloat(el.costPrice.value) || 0;
-    const cBeton = parseFloat(el.betonCostRate.value) || 0;
-    const cMortar = parseFloat(el.mortarCostRate.value) || 0;
-    const sPrice = parseFloat(el.sellPrice.value) || 0;
-    
-    const totalExpense = laborTotal + (finalQty * cPrice) + (bVol * cBeton) + (mortarBags * cMortar);
-    const totalRev = finalQty * sPrice;
-    const netProfit = totalRev - totalExpense;
-    
-    el.resTotalCost.textContent = `${totalExpense.toLocaleString('ru-RU')} ₸`;
-    el.resNetProfit.textContent = `${netProfit.toLocaleString('ru-RU')} ₸`;
-    
+
+    // Read Input Values
+    const wLen = Math.max(0, parseFloat(dom.wallLength.value) || 0); // mm
+    const wHgt = Math.max(0, parseFloat(dom.wallHeight.value) || 0); // mm
+    const wThk = Math.max(1, parseFloat(dom.wallThickness.value) || 200); // mm
+    const oArea = Math.max(0, parseFloat(dom.openingsArea.value) || 0); // m2
+    const wPct = Math.max(0, parseFloat(dom.wastePercent.value) || 0); // %
+    const bVol = Math.max(0, parseFloat(dom.betonVol.value) || 0); // m3
+
+    // Material specs
+    const matKey = dom.materialSelect.value || 'gazoblok_200';
+    const mat = materialsData[matKey] || materialsData.gazoblok_200;
+
+    // Dimensions in meters
+    const lenM = wLen / 1000;
+    const hgtM = wHgt / 1000;
+    const thkM = wThk / 1000;
+
+    // Areas & Volumes
+    const grossWallArea = lenM * hgtM;
+    const netWallArea = Math.max(0, grossWallArea - oArea);
+    const netMasonryVol = Math.max(0, netWallArea * thkM);
+
+    // Block Quantities
+    const exactQty = netMasonryVol > 0 ? Math.ceil(netMasonryVol / mat.vol) : 0;
+    const wasteQty = Math.ceil(exactQty * (1 + (wPct / 100)));
+
+    // Manual Override
+    const manualInput = parseInt(dom.manualQty.value);
+    const hasManual = !isNaN(manualInput) && manualInput > 0;
+    const finalQty = hasManual ? manualInput : wasteQty;
+
+    // Logistics & Weight
+    const pallets = Math.ceil(finalQty / mat.perPallet);
+    const mortarBags = Math.ceil(netMasonryVol * mat.bagsPerM3);
+    const blocksWeightKg = finalQty * mat.weight;
+    const mortarWeightKg = mortarBags * 25;
+    const concreteWeightKg = bVol * 2400; // ~2.4t per m3 reinforced concrete
+    const totalWeightTons = (blocksWeightKg + mortarWeightKg + concreteWeightKg) / 1000;
+    const trucksCount = totalWeightTons > 0 ? Math.ceil(totalWeightTons / 20) : 0;
+
+    // Labor Rates (Prorab)
+    const lBlock = Math.max(0, parseFloat(dom.laborBlockRate.value) || 0);
+    const lBeton = Math.max(0, parseFloat(dom.laborBetonRate.value) || 0);
+    const laborMasonry = finalQty * lBlock;
+    const laborConcrete = bVol * lBeton;
+    const totalLaborWages = laborMasonry + laborConcrete;
+
+    // Financial Rates (Bastyk)
+    const cBlock = Math.max(0, parseFloat(dom.costPrice.value) || 0);
+    const cBeton = Math.max(0, parseFloat(dom.betonCostRate.value) || 0);
+    const cMortar = Math.max(0, parseFloat(dom.mortarCostRate.value) || 0);
+    const sBlock = Math.max(0, parseFloat(dom.sellPrice.value) || 0);
+    const sBeton = Math.max(0, parseFloat(dom.sellBetonPrice ? dom.sellBetonPrice.value : 0) || 0);
+
+    const matExpenses = (finalQty * cBlock) + (bVol * cBeton) + (mortarBags * cMortar);
+    const totalExpenses = matExpenses + totalLaborWages;
+    const totalRevenue = (finalQty * sBlock) + (bVol * sBeton);
+    const netProfit = totalRevenue - totalExpenses;
+    const marginPct = totalRevenue > 0 ? ((netProfit / totalRevenue) * 100) : 0;
+
+    // Render Technical Results to DOM
+    dom.resQtyWaste.textContent = `${formatNum(finalQty)} ${t.pieces}`;
+    dom.resQty.textContent = `${formatNum(exactQty)} ${t.pieces}`;
+    dom.resPallets.textContent = `${formatNum(pallets)} ${t.pieces}`;
+    dom.resCleanVol.textContent = `${netMasonryVol.toFixed(3)} м³`;
+    dom.resCleanArea.textContent = `${netWallArea.toFixed(2)} м²`;
+    dom.resMortar.textContent = `${formatNum(mortarBags)} ${t.pieces}`;
+    dom.resBeton.textContent = `${bVol.toFixed(3)} м³`;
+    dom.resWeight.textContent = `${totalWeightTons.toFixed(2)} ${t.tons}`;
+    dom.resTrucks.textContent = `${formatNum(trucksCount)} шт`;
+
+    // Render Prorab Wages
+    dom.resLaborTotal.textContent = `${formatNum(totalLaborWages)} ₸`;
+
+    // Render Bastyk Financials
+    dom.resMatExpense.textContent = `${formatNum(matExpenses)} ₸`;
+    dom.resLaborExpense.textContent = `${formatNum(totalLaborWages)} ₸`;
+    dom.resTotalCost.textContent = `${formatNum(totalExpenses)} ₸`;
+    dom.resRevenue.textContent = `${formatNum(totalRevenue)} ₸`;
+    dom.resNetProfit.textContent = `${formatNum(netProfit)} ₸`;
+    dom.resMargin.textContent = `${marginPct.toFixed(1)} %`;
+
+    // Profit dynamic coloring
+    if (netProfit < 0) {
+        dom.resNetProfit.style.color = 'var(--color-danger)';
+        dom.resMargin.style.color = 'var(--color-danger)';
+    } else {
+        dom.resNetProfit.style.color = 'var(--color-success)';
+        dom.resMargin.style.color = 'var(--color-success)';
+    }
+
+    // Return current calculated snapshot object
     return {
-        name: el.projectName.value || 'Без названия',
+        projectName: dom.projectName.value.trim() || (currentLang === 'kz' ? 'Жаңа нысан' : 'Новый объект'),
         matKey,
         matName: mat.name,
-        wLen, wHgt, wThk, oArea, wPct, cleanVol, bVol,
-        qtyCalc, qtyWaste, manualQ, finalQty,
-        totalWeightTons, mortarBags, trucks,
-        lBlock, lBeton, laborTotal,
-        cPrice, cBeton, cMortar, sPrice, totalExpense, netProfit
+        matShort: mat.shortName,
+        wLen, wHgt, wThk, oArea, wPct, bVol,
+        netWallArea, netMasonryVol,
+        exactQty, wasteQty, hasManual, finalQty,
+        pallets, mortarBags, totalWeightTons, trucksCount,
+        lBlock, lBeton, laborMasonry, laborConcrete, totalLaborWages,
+        cBlock, cBeton, cMortar, sBlock, sBeton,
+        matExpenses, totalExpenses, totalRevenue, netProfit, marginPct
     };
 }
 
-// Save Project
-el.saveBtn.addEventListener('click', () => {
-    vibe();
-    const data = {
-        id: Date.now(),
-        date: new Date().toLocaleString('ru-RU'),
-        ...calculate(),
-        inputs: {
-            projectName: el.projectName.value,
-            materialSelect: el.materialSelect.value,
-            wallLength: el.wallLength.value,
-            wallHeight: el.wallHeight.value,
-            wallThickness: el.wallThickness.value,
-            openingsArea: el.openingsArea.value,
-            wastePercent: el.wastePercent.value,
-            betonVol: el.betonVol.value,
-            manualQty: el.manualQty.value,
-            laborBlockRate: el.laborBlockRate.value,
-            laborBetonRate: el.laborBetonRate.value,
-            costPrice: el.costPrice.value,
-            betonCostRate: el.betonCostRate.value,
-            mortarCostRate: el.mortarCostRate.value,
-            sellPrice: el.sellPrice.value
-        }
-    };
-    
-    // Check if updating existing by name (simple logic: just append new or maybe overwrite by id if we implement edit mode. Let's just prepend for now)
-    projects.unshift(data);
-    localStorage.setItem('tartyp_projects', JSON.stringify(projects));
-    renderArchive();
-    
-    // visual feedback
-    const origText = el.saveBtn.innerHTML;
-    el.saveBtn.textContent = 'Сохранено ✓';
-    el.saveBtn.style.backgroundColor = '#4CAF50';
-    setTimeout(() => {
-        el.saveBtn.innerHTML = origText;
-        el.saveBtn.style.backgroundColor = '';
-    }, 1500);
-});
+// Generate Native Excel Binary (.xlsx) using SheetJS
+function generateExcelWorkbook(data) {
+    const isKz = currentLang === 'kz';
+    const dateStr = new Date().toLocaleString('ru-RU');
 
-// Load Project
-window.loadProject = function(id) {
-    vibe();
-    const proj = projects.find(p => p.id === id);
-    if (!proj) return;
-    
-    // Restore states
-    const inputs = proj.inputs;
-    el.projectName.value = inputs.projectName || '';
-    el.materialSelect.value = inputs.materialSelect || 'gazoblok';
-    el.wallLength.value = inputs.wallLength || '';
-    el.wallHeight.value = inputs.wallHeight || '';
-    el.wallThickness.value = inputs.wallThickness || '';
-    el.openingsArea.value = inputs.openingsArea || '';
-    el.wastePercent.value = inputs.wastePercent || '7';
-    el.betonVol.value = inputs.betonVol || '';
-    el.manualQty.value = inputs.manualQty || '';
-    el.laborBlockRate.value = inputs.laborBlockRate || '';
-    el.laborBetonRate.value = inputs.laborBetonRate || '';
-    el.costPrice.value = inputs.costPrice || '';
-    el.betonCostRate.value = inputs.betonCostRate || '';
-    el.mortarCostRate.value = inputs.mortarCostRate || '';
-    el.sellPrice.value = inputs.sellPrice || '';
-    
-    calculate();
-    
-    // Switch tab
-    el.navArchive.classList.remove('active');
-    el.navSettings.classList.remove('active');
-    el.navCalc.classList.add('active');
-    
-    el.archiveView.classList.remove('active');
-    el.settingsView.classList.remove('active');
-    el.calcView.classList.add('active');
-};
+    // Structured Table Rows
+    const rows = [
+        ["ИНЖЕНЕРНАЯ СМЕТА TARTYP CRM", "", ""],
+        ["Дата формирования", dateStr, ""],
+        ["Объект", data.projectName, ""],
+        ["Материал", data.matName, ""],
+        ["", "", ""],
+        ["ПАРАМЕТРЫ СТЕН И ПРОЕМОВ", "ЗНАЧЕНИЕ", "ЕД. ИЗМ."],
+        ["Длина стены", data.wLen, "мм"],
+        ["Высота стены", data.wHgt, "мм"],
+        ["Толщина стены", data.wThk, "мм"],
+        ["Площадь проемов (окна/двери)", data.oArea, "м²"],
+        ["Чистая площадь стен", Number(data.netWallArea.toFixed(2)), "м²"],
+        ["Чистый объем кладки", Number(data.netMasonryVol.toFixed(3)), "м³"],
+        ["Объем бетона (армопояс/перемычки)", Number(data.bVol.toFixed(3)), "м³"],
+        ["Запас на бой и подрезку", data.wPct, "%"],
+        ["", "", ""],
+        ["ПОТРЕБНОСТЬ В МАТЕРИАЛАХ И ЛОГИСТИКА", "КОЛИЧЕСТВО", "ЕД. ИЗМ."],
+        ["Расчетное количество блоков", data.exactQty, "шт"],
+        ["ИТОГО БЛОКОВ К ЗАКУПУ (С ЗАПАСОМ)", data.finalQty, "шт"],
+        ["Количество поддонов / паллет", data.pallets, "подд."],
+        ["Клей / кладочная смесь (мешки 25кг)", data.mortarBags, "меш."],
+        ["Общий строительный вес материалов", Number(data.totalWeightTons.toFixed(2)), "тонн"],
+        ["Фур для перевозки (по 20т)", data.trucksCount, "рейсов"],
+        ["", "", ""],
+        ["ОПЛАТА ТРУДА (БРИГАДА / ПРОРАБ)", "СУММА", "ВАЛЮТА"],
+        ["Ставка кладки блока за 1 шт", data.lBlock, "₸/шт"],
+        ["Оплата за кладку блоков", data.laborMasonry, "₸"],
+        ["Ставка заливки бетона за 1 м³", data.lBeton, "₸/м³"],
+        ["Оплата за заливку бетона", data.laborConcrete, "₸"],
+        ["ИТОГО К ВЫПЛАТЕ РАБОЧИМ", data.totalLaborWages, "₸"]
+    ];
 
-// Delete Project
-window.deleteProject = function(id) {
-    vibe();
-    if (confirm(i18n[currentLang].delConfirm)) {
-        projects = projects.filter(p => p.id !== id);
-        localStorage.setItem('tartyp_projects', JSON.stringify(projects));
-        renderArchive();
+    if (currentRole === 'boss') {
+        rows.push(
+            ["", "", ""],
+            ["ФИНАНСОВЫЙ ОТЧЕТ РУКОВОДИТЕЛЯ (БАСТЫҚ)", "СУММА", "ВАЛЮТА"],
+            ["Закуп блока за 1 шт", data.cBlock, "₸/шт"],
+            ["Закуп бетона за 1 м³", data.cBeton, "₸/м³"],
+            ["Закуп клея за 1 мешок", data.cMortar, "₸/меш"],
+            ["Цена продажи блока (за 1 шт)", data.sBlock, "₸/шт"],
+            ["Цена продажи бетона клиенту (за 1 м³)", data.sBeton, "₸/м³"],
+            ["Общие затраты на материалы", data.matExpenses, "₸"],
+            ["Общие затраты на оплату труда", data.totalLaborWages, "₸"],
+            ["СЕБЕСТОИМОСТЬ ОБЪЕКТА (МАТ + РАБОТА)", data.totalExpenses, "₸"],
+            ["ВЫРУЧКА ОТ КЛИЕНТА", data.totalRevenue, "₸"],
+            ["ЧИСТАЯ ПРИБЫЛЬ ОБЪЕКТА", data.netProfit, "₸"],
+            ["РЕНТАБЕЛЬНОСТЬ СДЕЛКИ", Number(data.marginPct.toFixed(1)), "%"]
+        );
     }
-};
 
-// Render Archive
-function renderArchive() {
-    el.archiveList.innerHTML = '';
-    const t = i18n[currentLang];
-    if (projects.length === 0) {
-        el.archiveList.innerHTML = `<p style="text-align:center; color:#AAA;">${t.noData}</p>`;
-        return;
-    }
-    
-    projects.forEach(p => {
-        const item = document.createElement('div');
-        item.className = 'archive-item';
-        item.innerHTML = `
-            <div class="archive-info" onclick="loadProject(${p.id})" style="flex:1; cursor:pointer;">
-                <h4>${p.name}</h4>
-                <p>${p.date} | ${p.matName}</p>
-                <p>${p.finalQty} ${t.pieces} | ${p.totalWeightTons.toFixed(1)} ${t.tons}</p>
-            </div>
-            <div class="archive-actions">
-                <button class="btn-icon delete" onclick="deleteProject(${p.id})">🗑</button>
-            </div>
-        `;
-        el.archiveList.appendChild(item);
+    const ws = XLSX.utils.aoa_to_sheet(rows);
+
+    // Set column widths
+    ws['!cols'] = [
+        { wch: 44 },
+        { wch: 22 },
+        { wch: 15 }
+    ];
+
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Смета TARTYP");
+
+    const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
+    const blob = new Blob([excelBuffer], { 
+        type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' 
     });
+
+    const safeFilename = `TARTYP_${data.projectName.replace(/[^a-zA-Z0-9а-яА-ЯёЁ_-]/g, '_')}.xlsx`;
+    return { blob, filename: safeFilename };
 }
 
-// Telegram Export with CSV Document
-el.tgBtn.addEventListener('click', async () => {
+// Direct Download Excel file
+function downloadExcelFile() {
+    vibe();
+    const data = calculate();
+    const { blob, filename } = generateExcelWorkbook(data);
+
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+    showToast(i18n[currentLang].excelDownloaded, 'success');
+}
+
+// Send Report to Telegram Bot
+async function sendTelegramReport() {
     vibe();
     const data = calculate();
     const t = i18n[currentLang];
     const dateStr = new Date().toLocaleString('ru-RU');
-    
-    const origText = el.tgBtn.innerHTML;
-    el.tgBtn.innerHTML = 'Отправка...';
-    
-    // Generate Report Text
-    let text = `🏗 *TARTYP Отчет: ${data.name}*\n`;
-    text += `📅 *Дата:* ${dateStr}\n\n`;
-    text += `🧱 *Материал:* ${data.matName}\n`;
-    text += `📏 *Чистый объем стены:* ${data.cleanVol.toFixed(3)} м³\n`;
-    text += `📦 *Кол-во (с учетом запаса ${data.wPct}%):* ${data.finalQty} шт\n`;
-    if (!isNaN(data.manualQ) && data.manualQ > 0) {
-        text += `*(Ручной ввод количества!)*\n`;
-    }
-    text += `⚖️ *Общий вес:* ${data.totalWeightTons.toFixed(2)} т\n`;
-    text += `🪣 *Смесь/Клей:* ${data.mortarBags} меш. (по 25кг)\n`;
-    text += `🚛 *Фур (20т):* ${data.trucks} шт\n`;
-    text += `💧 *Объем бетона:* ${data.bVol.toFixed(3)} м³\n\n`;
-    
-    text += `👷 *Зарплаты (Прорабу):*\n`;
-    text += `Кладка блоков: ${data.lBlock.toLocaleString('ru-RU')} ₸/шт\n`;
-    text += `Заливка бетона: ${data.lBeton.toLocaleString('ru-RU')} ₸/м³\n`;
-    text += `*Итого к выплате:* ${data.laborTotal.toLocaleString('ru-RU')} ₸\n`;
-    
+
+    const origText = dom.tgBtn.innerHTML;
+    dom.tgBtn.innerHTML = `<span>⏳</span><span>${t.tgSending}</span>`;
+    dom.tgBtn.disabled = true;
+
+    // Compact & clean Markdown caption (< 1000 chars limit for Telegram sendDocument)
+    let caption = `🏗 *TARTYP CRM: ${data.projectName}*\n`;
+    caption += `📅 *${dateStr}*\n\n`;
+    caption += `🧱 *Материал:* ${data.matShort}\n`;
+    caption += `📏 *Стена:* ${data.wLen}×${data.wHgt}×${data.wThk} мм\n`;
+    caption += `📐 *Площадь:* ${data.netWallArea.toFixed(2)} м² | *Объем:* ${data.netMasonryVol.toFixed(3)} м³\n`;
+    caption += `📦 *Блоков с запасом (${data.wPct}%):* *${formatNum(data.finalQty)} шт* (${data.pallets} подд.)\n`;
+    caption += `🪣 *Клей/Смесь:* ${data.mortarBags} меш. | 💧 *Бетон:* ${data.bVol.toFixed(2)} м³\n`;
+    caption += `⚖️ *Вес:* ${data.totalWeightTons.toFixed(2)} т | 🚛 *Фур:* ${data.trucksCount} шт\n\n`;
+
+    caption += `👷 *Бригада (К выдаче):* *${formatNum(data.totalLaborWages)} ₸*\n`;
+    if (data.lBlock > 0) caption += `• Кладка: ${formatNum(data.lBlock)} ₸/шт (${formatNum(data.laborMasonry)} ₸)\n`;
+    if (data.lBeton > 0 && data.bVol > 0) caption += `• Бетон: ${formatNum(data.lBeton)} ₸/м³ (${formatNum(data.laborConcrete)} ₸)\n`;
+
     if (currentRole === 'boss') {
-        text += `\n💰 *Финансы (Бастык):*\n`;
-        text += `Расход (Мат + Работа): ${data.totalExpense.toLocaleString('ru-RU')} ₸\n`;
-        text += `Продажа заказчику: ${(data.finalQty * data.sPrice).toLocaleString('ru-RU')} ₸\n`;
-        text += `*Чистая прибыль:* ${data.netProfit.toLocaleString('ru-RU')} ₸\n`;
+        caption += `\n👑 *Финансы Бастыка:*\n`;
+        caption += `• Расход (Мат+Работа): ${formatNum(data.totalExpenses)} ₸\n`;
+        caption += `• Выручка: ${formatNum(data.totalRevenue)} ₸\n`;
+        caption += `💰 *Чистая прибыль:* *${formatNum(data.netProfit)} ₸* (${data.marginPct.toFixed(1)}%)\n`;
     }
-    
-    // Generate CSV Content
-    let csvContent = "\uFEFF";
-    csvContent += "Параметр;Значение\n";
-    csvContent += `Объект;${data.name}\n`;
-    csvContent += `Дата;${dateStr}\n`;
-    csvContent += `Материал;${data.matName}\n`;
-    csvContent += `Длина стены (мм);${data.wLen}\n`;
-    csvContent += `Высота стены (мм);${data.wHgt}\n`;
-    csvContent += `Толщина (мм);${data.wThk}\n`;
-    csvContent += `Проемы (м2);${data.oArea}\n`;
-    csvContent += `Объем бетона (м3);${data.bVol.toFixed(3)}\n`;
-    csvContent += `Чистый объем (м3);${data.cleanVol.toFixed(3)}\n`;
-    csvContent += `Кол-во расчетное (шт);${data.qtyCalc}\n`;
-    csvContent += `Кол-во с запасом ${data.wPct}% (шт);${data.qtyWaste}\n`;
-    
-    if (!isNaN(data.manualQ) && data.manualQ > 0) {
-        csvContent += `Итоговое количество (ручное, шт);${data.manualQ}\n`;
-    } else {
-        csvContent += `Итоговое количество (шт);${data.finalQty}\n`;
-    }
-    
-    csvContent += `Общий вес (т);${data.totalWeightTons.toFixed(2)}\n`;
-    csvContent += `Смесь/Клей меш. по 25кг (шт);${data.mortarBags}\n`;
-    csvContent += `Фур по 20т (шт);${data.trucks}\n`;
-    
-    csvContent += `Оплата кладка (₸/шт);${data.lBlock}\n`;
-    csvContent += `Оплата бетон (₸/м3);${data.lBeton}\n`;
-    csvContent += `Итого к выплате рабочим (₸);${data.laborTotal}\n`;
-    
-    if (currentRole === 'boss') {
-        csvContent += `Закуп блок (₸/шт);${data.cPrice}\n`;
-        csvContent += `Закуп бетон (₸/м3);${data.cBeton}\n`;
-        csvContent += `Закуп клей (₸/меш);${data.cMortar}\n`;
-        csvContent += `Продажа заказчику (₸/шт);${data.sPrice}\n`;
-        csvContent += `Общий расход мат+работа (₸);${data.totalExpense}\n`;
-        csvContent += `Чистая прибыль (₸);${data.netProfit}\n`;
-    }
-    
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-    
-    // Telegram API details
+
+    caption += `\n📎 _Детальная ведомость прикреплена в Excel файле_`;
+
+    const { blob, filename } = generateExcelWorkbook(data);
+
     const token = '8678551019:AAHLndEACJNRey8u74uAApUVaT_iQEeebjQ';
     const chatId = '5623597772';
     const url = `https://api.telegram.org/bot${token}/sendDocument`;
 
-    // FormData for document upload
     const formData = new FormData();
     formData.append('chat_id', chatId);
-    formData.append('caption', text);
+    formData.append('caption', caption);
     formData.append('parse_mode', 'Markdown');
-    formData.append('document', blob, `Отчет_${data.name || 'объект'}.csv`);
+    formData.append('document', blob, filename);
 
     try {
         const response = await fetch(url, {
             method: 'POST',
             body: formData
         });
-        
+
         if (response.ok) {
-            el.tgBtn.textContent = 'Успешно отправлено ✓';
-            el.tgBtn.style.backgroundColor = '#4CAF50';
+            showToast(t.tgSuccess, 'success');
         } else {
-            el.tgBtn.textContent = 'Ошибка!';
-            el.tgBtn.style.backgroundColor = 'var(--color-danger)';
+            const errData = await response.json().catch(() => ({}));
+            console.warn('Telegram API response not ok:', errData);
+            showToast(t.tgError, 'error');
+            // If failed, auto-trigger local download so data isn't lost
+            downloadExcelFile();
         }
-    } catch (e) {
-        console.error('Telegram Bot Error:', e);
-        el.tgBtn.textContent = 'Ошибка сети!';
-        el.tgBtn.style.backgroundColor = 'var(--color-danger)';
+    } catch (err) {
+        console.error('Network Error during Telegram upload:', err);
+        showToast(t.tgError, 'error');
+        downloadExcelFile();
+    } finally {
+        dom.tgBtn.innerHTML = origText;
+        dom.tgBtn.disabled = false;
     }
-    
-    setTimeout(() => {
-        el.tgBtn.innerHTML = origText;
-        el.tgBtn.style.backgroundColor = '';
-    }, 2000);
-});
+}
 
-// Event Listeners for Bottom Nav
-el.navCalc.addEventListener('click', () => {
+// Archive Storage & Rendering
+function saveProjectToArchive() {
     vibe();
-    el.navArchive.classList.remove('active');
-    el.navSettings.classList.remove('active');
-    el.navCalc.classList.add('active');
-    
-    el.archiveView.classList.remove('active');
-    el.settingsView.classList.remove('active');
-    el.calcView.classList.add('active');
-});
+    const data = calculate();
+    const projectRecord = {
+        id: Date.now(),
+        date: new Date().toLocaleDateString('ru-RU') + ' ' + new Date().toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' }),
+        ...data,
+        inputs: {
+            projectName: dom.projectName.value,
+            materialSelect: dom.materialSelect.value,
+            wallLength: dom.wallLength.value,
+            wallHeight: dom.wallHeight.value,
+            wallThickness: dom.wallThickness.value,
+            openingsArea: dom.openingsArea.value,
+            wastePercent: dom.wastePercent.value,
+            betonVol: dom.betonVol.value,
+            manualQty: dom.manualQty.value,
+            laborBlockRate: dom.laborBlockRate.value,
+            laborBetonRate: dom.laborBetonRate.value,
+            costPrice: dom.costPrice.value,
+            betonCostRate: dom.betonCostRate.value,
+            mortarCostRate: dom.mortarCostRate.value,
+            sellPrice: dom.sellPrice.value,
+            sellBetonPrice: dom.sellBetonPrice ? dom.sellBetonPrice.value : ''
+        }
+    };
 
-el.navArchive.addEventListener('click', () => {
-    vibe();
-    el.navCalc.classList.remove('active');
-    el.navSettings.classList.remove('active');
-    el.navArchive.classList.add('active');
-    
-    el.calcView.classList.remove('active');
-    el.settingsView.classList.remove('active');
-    el.archiveView.classList.add('active');
-});
-
-el.navSettings.addEventListener('click', () => {
-    vibe();
-    el.navCalc.classList.remove('active');
-    el.navArchive.classList.remove('active');
-    el.navSettings.classList.add('active');
-    
-    el.calcView.classList.remove('active');
-    el.archiveView.classList.remove('active');
-    el.settingsView.classList.add('active');
-});
-
-el.langSelect.addEventListener('change', (e) => {
-    currentLang = e.target.value;
-    localStorage.setItem('tartyp_lang', currentLang);
-    applyTranslation();
+    projects.unshift(projectRecord);
+    localStorage.setItem('tartyp_projects', JSON.stringify(projects));
     renderArchive();
-});
+    showToast(i18n[currentLang].savedSuccess, 'success');
+}
 
-el.roleSelect.addEventListener('change', (e) => {
-    currentRole = e.target.value;
-    localStorage.setItem('tartyp_role', currentRole);
-    updateRoleView();
-});
+function renderArchive() {
+    if (!dom.archiveList) return;
+    dom.archiveList.innerHTML = '';
+    const t = i18n[currentLang];
 
-el.resetBtn.addEventListener('click', () => {
+    if (projects.length === 0) {
+        dom.archiveList.innerHTML = `
+            <div class="empty-state">
+                <div class="icon">📁</div>
+                <p>${t.noData}</p>
+            </div>
+        `;
+        return;
+    }
+
+    projects.forEach(p => {
+        const item = document.createElement('div');
+        item.className = 'archive-item';
+        
+        let profitPill = '';
+        if (currentRole === 'boss' && p.netProfit !== undefined) {
+            profitPill = `
+                <div class="spec-pill profit">
+                    <span>Пайда/Прибыль:</span> <strong>${formatNum(p.netProfit)} ₸</strong>
+                </div>
+            `;
+        }
+
+        item.innerHTML = `
+            <div class="archive-header">
+                <div>
+                    <h4 class="archive-title">${p.projectName || 'Без названия'}</h4>
+                    <span class="archive-date">${p.date} • ${p.matShort || p.matName}</span>
+                </div>
+            </div>
+            <div class="archive-specs">
+                <div class="spec-pill"><span>Блоков:</span> <strong>${formatNum(p.finalQty)} шт</strong></div>
+                <div class="spec-pill"><span>Поддонов:</span> <strong>${formatNum(p.pallets)}</strong></div>
+                <div class="spec-pill"><span>Бетон:</span> <strong>${(p.bVol || 0).toFixed(2)} м³</strong></div>
+                <div class="spec-pill"><span>Зарплата:</span> <strong>${formatNum(p.totalLaborWages)} ₸</strong></div>
+                ${profitPill}
+            </div>
+            <div class="archive-btn-row">
+                <button class="btn-secondary btn-sm" onclick="loadProjectFromArchive(${p.id})">
+                    <span>📂</span> <span>Открыть</span>
+                </button>
+                <button class="btn-excel btn-sm" onclick="downloadProjectExcel(${p.id})">
+                    <span>📊</span> <span>Excel</span>
+                </button>
+                <button class="btn-icon btn-sm delete" onclick="deleteProjectFromArchive(${p.id})" title="Удалить">
+                    🗑
+                </button>
+            </div>
+        `;
+        dom.archiveList.appendChild(item);
+    });
+}
+
+// Global window actions for inline onclick handlers
+window.loadProjectFromArchive = function(id) {
     vibe();
-    if (confirm(i18n[currentLang].delConfirm)) {
-        localStorage.removeItem('tartyp_projects');
-        projects = [];
+    const p = projects.find(item => item.id === id);
+    if (!p || !p.inputs) return;
+
+    // Restore input fields
+    const inp = p.inputs;
+    dom.projectName.value = inp.projectName || '';
+    dom.materialSelect.value = inp.materialSelect || 'gazoblok_200';
+    dom.wallLength.value = inp.wallLength || '';
+    dom.wallHeight.value = inp.wallHeight || '';
+    dom.wallThickness.value = inp.wallThickness || '200';
+    dom.openingsArea.value = inp.openingsArea || '';
+    dom.wastePercent.value = inp.wastePercent || '7';
+    dom.betonVol.value = inp.betonVol || '';
+    dom.manualQty.value = inp.manualQty || '';
+    dom.laborBlockRate.value = inp.laborBlockRate || '';
+    dom.laborBetonRate.value = inp.laborBetonRate || '';
+    dom.costPrice.value = inp.costPrice || '';
+    dom.betonCostRate.value = inp.betonCostRate || '';
+    dom.mortarCostRate.value = inp.mortarCostRate || '';
+    dom.sellPrice.value = inp.sellPrice || '';
+    if (dom.sellBetonPrice) dom.sellBetonPrice.value = inp.sellBetonPrice || '';
+
+    calculate();
+    switchTab('calc');
+    showToast(`Объект "${p.projectName}" загружен!`, 'info');
+};
+
+window.downloadProjectExcel = function(id) {
+    vibe();
+    const p = projects.find(item => item.id === id);
+    if (!p) return;
+    const { blob, filename } = generateExcelWorkbook(p);
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    showToast(i18n[currentLang].excelDownloaded, 'success');
+};
+
+window.deleteProjectFromArchive = function(id) {
+    vibe();
+    projects = projects.filter(item => item.id !== id);
+    localStorage.setItem('tartyp_projects', JSON.stringify(projects));
+    renderArchive();
+    showToast(i18n[currentLang].deletedSuccess, 'info');
+};
+
+// Tab Switcher
+function switchTab(tabName) {
+    vibe(10);
+    const tabs = {
+        calc: { nav: dom.navCalc, view: dom.calcView },
+        archive: { nav: dom.navArchive, view: dom.archiveView },
+        settings: { nav: dom.navSettings, view: dom.settingsView }
+    };
+
+    Object.keys(tabs).forEach(key => {
+        const item = tabs[key];
+        if (key === tabName) {
+            item.nav.classList.add('active');
+            item.view.classList.add('active');
+        } else {
+            item.nav.classList.remove('active');
+            item.view.classList.remove('active');
+        }
+    });
+
+    if (tabName === 'archive') {
         renderArchive();
     }
-});
+}
 
-// Kick off
-init();
+// Preset Quick Chips Handler
+function setupQuickChips() {
+    document.querySelectorAll('.chip-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            vibe();
+            if (btn.dataset.thk) {
+                dom.wallThickness.value = btn.dataset.thk;
+            }
+            if (btn.dataset.waste) {
+                dom.wastePercent.value = btn.dataset.waste;
+            }
+            calculate();
+        });
+    });
+}
+
+// Attach Event Listeners
+function setupEventListeners() {
+    // Input events for real-time recalculation
+    const inputFields = [
+        dom.projectName, dom.materialSelect, dom.wallLength, dom.wallHeight,
+        dom.wallThickness, dom.openingsArea, dom.wastePercent, dom.betonVol,
+        dom.manualQty, dom.laborBlockRate, dom.laborBetonRate, dom.costPrice,
+        dom.betonCostRate, dom.mortarCostRate, dom.sellPrice
+    ];
+
+    inputFields.forEach(inputEl => {
+        if (inputEl) {
+            inputEl.addEventListener('input', calculate);
+            inputEl.addEventListener('change', calculate);
+        }
+    });
+
+    // Preset chips
+    setupQuickChips();
+
+    // Navigation Tabs
+    if (dom.navCalc) dom.navCalc.addEventListener('click', () => switchTab('calc'));
+    if (dom.navArchive) dom.navArchive.addEventListener('click', () => switchTab('archive'));
+    if (dom.navSettings) dom.navSettings.addEventListener('click', () => switchTab('settings'));
+
+    // Header Quick Actions
+    if (dom.quickRoleBadge) {
+        dom.quickRoleBadge.addEventListener('click', () => {
+            vibe();
+            const nextRole = currentRole === 'boss' ? 'worker' : 'boss';
+            setRole(nextRole);
+            showToast(nextRole === 'boss' ? 'Режим: 👑 БАСТЫҚ (Финансы активны)' : 'Режим: 👷 ПРОРАБ (Смета + Зарплаты)', 'info');
+        });
+    }
+
+    if (dom.langRuBtn) {
+        dom.langRuBtn.addEventListener('click', () => {
+            vibe();
+            applyLanguage('ru');
+        });
+    }
+
+    if (dom.langKzBtn) {
+        dom.langKzBtn.addEventListener('click', () => {
+            vibe();
+            applyLanguage('kz');
+        });
+    }
+
+    // Settings Dropdowns
+    if (dom.langSelect) {
+        dom.langSelect.addEventListener('change', (e) => applyLanguage(e.target.value));
+    }
+
+    if (dom.roleSelect) {
+        dom.roleSelect.addEventListener('change', (e) => setRole(e.target.value));
+    }
+
+    // Action Buttons
+    if (dom.saveBtn) dom.saveBtn.addEventListener('click', saveProjectToArchive);
+    if (dom.exportExcelBtn) dom.exportExcelBtn.addEventListener('click', downloadExcelFile);
+    if (dom.tgBtn) dom.tgBtn.addEventListener('click', sendTelegramReport);
+
+    if (dom.clearArchiveBtn) {
+        dom.clearArchiveBtn.addEventListener('click', () => {
+            vibe();
+            if (confirm(i18n[currentLang].clearConfirm)) {
+                projects = [];
+                localStorage.removeItem('tartyp_projects');
+                renderArchive();
+                showToast(i18n[currentLang].deletedSuccess, 'info');
+            }
+        });
+    }
+
+    if (dom.resetDataBtn) {
+        dom.resetDataBtn.addEventListener('click', () => {
+            vibe();
+            if (confirm(i18n[currentLang].resetConfirm)) {
+                localStorage.clear();
+                projects = [];
+                location.reload();
+            }
+        });
+    }
+}
+
+// Initialize Application
+function initApp() {
+    setupEventListeners();
+    applyLanguage(currentLang);
+    setRole(currentRole);
+    calculate();
+    renderArchive();
+    handleHashRoute();
+}
+
+// URL Hash routing for direct tab opening and mode testing
+function handleHashRoute() {
+    const hash = window.location.hash.toLowerCase();
+    if (hash.includes('boss')) setRole('boss');
+    if (hash.includes('worker')) setRole('worker');
+    if (hash.includes('kz')) applyLanguage('kz');
+    if (hash.includes('ru')) applyLanguage('ru');
+    if (hash.includes('archive')) switchTab('archive');
+    if (hash.includes('settings')) switchTab('settings');
+    if (hash.includes('calc')) switchTab('calc');
+}
+window.addEventListener('hashchange', handleHashRoute);
+
+// Run on DOM load
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initApp);
+} else {
+    initApp();
+}
