@@ -109,6 +109,11 @@ const i18n = {
         openings: "Проемы",
         wastePct: "Бой/Запас",
         betonVol: "Бетон",
+        title3D: "3D Модель стены (BIM)",
+        legMasonry: "Кладка",
+        legConcrete: "Армопояс",
+        legOpening: "Проем",
+        badge3D: "🔄 360° Вращение",
         techResults: "Инженерный расчет",
         qtyWaste: "ИТОГО БЛОКОВ (С ЗАПАСОМ):",
         qtyCalc: "Кол-во (точное):",
@@ -197,6 +202,11 @@ const i18n = {
         openings: "Ойықтар",
         wastePct: "Бой/Қор",
         betonVol: "Бетон",
+        title3D: "Қабырғаның 3D Үлгісі (BIM)",
+        legMasonry: "Қалау",
+        legConcrete: "Армопояс",
+        legOpening: "Ойық",
+        badge3D: "🔄 360° Айналдыру",
         techResults: "Инженерлік есептеу",
         qtyWaste: "БАРЛЫҒЫ БЛОК (ҚОРМЕН):",
         qtyCalc: "Саны (дәл):",
@@ -463,6 +473,12 @@ function applyLanguage(lang) {
     setText('t-openings', t.openings);
     setText('t-waste-pct', t.wastePct);
     setText('t-beton-vol', t.betonVol);
+    setText('t-3d-title', t.title3D);
+    setText('t-leg-masonry', t.legMasonry);
+    setText('t-leg-concrete', t.legConcrete);
+    setText('t-leg-opening', t.legOpening);
+    const badge3d = document.querySelector('.badge-3d');
+    if (badge3d) badge3d.textContent = t.badge3D;
     setText('t-tech-results', t.techResults);
     setText('t-qty-waste', t.qtyWaste);
     setText('t-qty-calc', t.qtyCalc);
@@ -622,10 +638,25 @@ function calculate() {
     const netProfit = totalRevenue - totalExpenses;
     const marginPct = totalRevenue > 0 ? ((netProfit / totalRevenue) * 100) : 0;
 
-    // Render Technical Results to DOM
-    dom.resQtyWaste.textContent = `${formatNum(finalQty)} ${t.pieces}`;
-    dom.resQty.textContent = `${formatNum(exactQty)} ${t.pieces}`;
-    dom.resPallets.textContent = `${formatNum(pallets)} ${t.pieces}`;
+    // Render Technical Results to DOM (with Juicy Ease-Out Odometer if available)
+    if (window.TartypFX && typeof window.TartypFX.animateValue === 'function') {
+        TartypFX.animateValue(dom.resQtyWaste, finalQty, 350, ` ${t.pieces}`);
+        TartypFX.animateValue(dom.resQty, exactQty, 350, ` ${t.pieces}`);
+        TartypFX.animateValue(dom.resPallets, pallets, 350, ` ${t.pieces}`);
+        TartypFX.animateValue(dom.resLaborTotal, totalLaborWages, 350, ' ₸');
+        TartypFX.animateValue(dom.resTotalCost, totalExpenses, 350, ' ₸');
+        TartypFX.animateValue(dom.resRevenue, totalRevenue, 350, ' ₸');
+        TartypFX.animateValue(dom.resNetProfit, netProfit, 350, ' ₸');
+    } else {
+        dom.resQtyWaste.textContent = `${formatNum(finalQty)} ${t.pieces}`;
+        dom.resQty.textContent = `${formatNum(exactQty)} ${t.pieces}`;
+        dom.resPallets.textContent = `${formatNum(pallets)} ${t.pieces}`;
+        dom.resLaborTotal.textContent = `${formatNum(totalLaborWages)} ₸`;
+        dom.resTotalCost.textContent = `${formatNum(totalExpenses)} ₸`;
+        dom.resRevenue.textContent = `${formatNum(totalRevenue)} ₸`;
+        dom.resNetProfit.textContent = `${formatNum(netProfit)} ₸`;
+    }
+
     dom.resCleanVol.textContent = `${netMasonryVol.toFixed(3)} м³`;
     dom.resCleanArea.textContent = `${netWallArea.toFixed(2)} м²`;
     dom.resMortar.textContent = `${formatNum(mortarBags)} ${t.pieces}`;
@@ -633,15 +664,9 @@ function calculate() {
     dom.resWeight.textContent = `${totalWeightTons.toFixed(2)} ${t.tons}`;
     dom.resTrucks.textContent = `${formatNum(trucksCount)} шт`;
 
-    // Render Prorab Wages
-    dom.resLaborTotal.textContent = `${formatNum(totalLaborWages)} ₸`;
-
     // Render Bastyk Financials
     dom.resMatExpense.textContent = `${formatNum(matExpenses)} ₸`;
     dom.resLaborExpense.textContent = `${formatNum(totalLaborWages)} ₸`;
-    dom.resTotalCost.textContent = `${formatNum(totalExpenses)} ₸`;
-    dom.resRevenue.textContent = `${formatNum(totalRevenue)} ₸`;
-    dom.resNetProfit.textContent = `${formatNum(netProfit)} ₸`;
     dom.resMargin.textContent = `${marginPct.toFixed(1)} %`;
 
     // Profit dynamic coloring
@@ -651,6 +676,18 @@ function calculate() {
     } else {
         dom.resNetProfit.style.color = 'var(--color-success)';
         dom.resMargin.style.color = 'var(--color-success)';
+    }
+
+    // Real-time 3D BIM Model Update
+    if (window.TartypFX && typeof window.TartypFX.update3DWall === 'function') {
+        window.TartypFX.update3DWall({
+            wLen,
+            wHgt,
+            wThk,
+            oArea,
+            bVol,
+            matKey
+        });
     }
 
     // Return current calculated snapshot object
@@ -1108,6 +1145,9 @@ function setupEventListeners() {
 // Initialize Application
 function initApp() {
     setupEventListeners();
+    if (window.TartypFX && typeof window.TartypFX.init3DWall === 'function') {
+        window.TartypFX.init3DWall('wall3DContainer');
+    }
     applyLanguage(currentLang);
     setRole(currentRole);
     calculate();

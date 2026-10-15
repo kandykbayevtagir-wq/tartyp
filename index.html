@@ -4,9 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>TARTYP CRM</title>
-    <link rel="stylesheet" href="style.css?v=6">
+    <link rel="stylesheet" href="style.css?v=7">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="three.min.js"></script>
+    <script src="xlsx.full.min.js"></script>
     <link rel="manifest" href="manifest.json">
 </head>
 <body>
@@ -147,6 +148,23 @@
                     <button type="button" class="chip-btn" data-waste="5">5%</button>
                     <button type="button" class="chip-btn" data-waste="7">7% (норм)</button>
                     <button type="button" class="chip-btn" data-waste="10">10%</button>
+                </div>
+            </div>
+
+            <!-- 3D Real-time BIM Wall Visualizer -->
+            <div class="card" id="threeDCard">
+                <div class="card-title" style="color: var(--color-cyan); display: flex; justify-content: space-between; align-items: center;">
+                    <div style="display: flex; align-items: center; gap: 6px;">
+                        <span>🌐</span>
+                        <span id="t-3d-title">3D Модель стены (BIM)</span>
+                    </div>
+                    <span class="badge-3d">🔄 360° Вращение</span>
+                </div>
+                <div id="wall3DContainer" class="three-d-viewport"></div>
+                <div class="three-d-legend">
+                    <div class="legend-item"><span class="legend-dot masonry"></span><span id="t-leg-masonry">Кладка</span></div>
+                    <div class="legend-item"><span class="legend-dot concrete"></span><span id="t-leg-concrete">Армопояс</span></div>
+                    <div class="legend-item"><span class="legend-dot opening"></span><span id="t-leg-opening">Проем</span></div>
                 </div>
             </div>
 
@@ -414,6 +432,7 @@
         </button>
     </nav>
 
-    <script src="app.js?v=6"></script>
+    <script src="webgl-effects.js?v=7"></script>
+    <script src="app.js?v=7"></script>
 </body>
 </html>
